@@ -1,5 +1,23 @@
 [
   {
+    "id": 303,
+    "title_en": "PNJ: Approval of the increase charter capital and amendment company charter",
+    "title_ko": "PNJ : 정관자본금 증액 및 회사정관 개정 승인의 건",
+    "summary_en": "",
+    "summary_ko": "",
+    "url": "https://en.vietstock.vn/2026/05/pnj-approval-of-the-increase-charter-capital-and-amendment-company-charter-964-633808.htm",
+    "source": "Vietnam Stock News",
+    "category": "경제",
+    "subcategory": "금융/증권",
+    "region": "southeast_asia",
+    "country": "베트남",
+    "country_flag": "🇻🇳",
+    "score": 0,
+    "created_at": "2026-05-21 05:03",
+    "sent_telegram": 1,
+    "posted_blog": 0
+  },
+  {
     "id": 301,
     "title_en": "Mega merger incoming: Should you buy PFC, REC shares ahead of merger? Here's what analysts say",
     "title_ko": "대규모 합병이 다가오고 있습니다: 합병에 앞서 PFC, REC 주식을 사야 할까요? 분석가들이 말하는 내용은 다음과 같습니다.",
@@ -878,24 +896,6 @@
     "country_flag": "",
     "score": 0,
     "created_at": "2026-05-20 21:01",
-    "sent_telegram": 1,
-    "posted_blog": 0
-  },
-  {
-    "id": 249,
-    "title_en": "Otedola to invest $100m in Dangote refinery via private placement",
-    "title_ko": "Otedola, 사모를 통해 Dangote 정유공장에 1억 달러 투자",
-    "summary_en": "Femi Otedola, chairman of First HoldCo, has revealed plans to invest $100 million in the Dangote Petroleum Refinery as the read more Otedola to...",
-    "summary_ko": "First HoldCo의 회장인 Femi Otedola는 Dangote Petroleum Refinery에 1억 달러를 투자할 계획을 밝혔습니다.",
-    "url": "https://businessday.ng/news/article/otedola-to-invest-100m-in-dangote-refinery-via-private-placement/",
-    "source": "BusinessDay Nigeria",
-    "category": "경제",
-    "subcategory": "금융/증권",
-    "region": "africa",
-    "country": "나이지리아",
-    "country_flag": "🇳🇬",
-    "score": 0,
-    "created_at": "2026-05-20 21:00",
     "sent_telegram": 1,
     "posted_blog": 0
   }
