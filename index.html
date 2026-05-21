@@ -50,13 +50,7 @@
       gap: 16px;
     }
 
-    .ticker-strip {
-      display: flex;
-      gap: 20px;
-      overflow: hidden;
-      flex: 1;
-    }
-
+    .ticker-strip { display: flex; gap: 20px; overflow: hidden; flex: 1; }
     .ticker-item { display: flex; gap: 6px; align-items: center; white-space: nowrap; }
     .ticker-label { color: var(--muted); }
     .ticker-val { color: var(--text); font-weight: 500; }
@@ -97,20 +91,13 @@
       text-align: right;
     }
 
-    /* NAV - 두 줄 탭 */
-    .nav-region {
+    .nav-region, .nav-sector {
       display: flex;
       gap: 0;
       overflow-x: auto;
-      border-bottom: 1px solid var(--border);
     }
 
-    .nav-sector {
-      display: flex;
-      gap: 0;
-      overflow-x: auto;
-      background: var(--bg3);
-    }
+    .nav-sector { background: var(--bg3); }
 
     nav a {
       padding: 9px 14px;
@@ -124,23 +111,16 @@
     }
 
     nav a:first-child { border-left: 1px solid var(--border); }
+    .nav-region a:hover, .nav-region a.active { color: var(--accent); background: var(--bg3); }
+    .nav-sector a { font-size: 11px; padding: 7px 12px; }
+    .nav-sector a:hover, .nav-sector a.active { color: var(--accent2); background: var(--bg2); }
 
-    .nav-region a:hover, .nav-region a.active {
-      color: var(--accent);
-      background: var(--bg3);
-    }
+    /* 이슈 탭 */
+    .nav-issues { background: #fff8f0; border-bottom: 1px solid var(--border); display: flex; gap: 0; overflow-x: auto; }
+    .nav-issues a { font-size: 11px; padding: 6px 12px; color: var(--accent); border-right: 1px solid var(--border); }
+    .nav-issues a:first-child { border-left: 1px solid var(--border); font-weight: 700; color: var(--muted); }
+    .nav-issues a:hover, .nav-issues a.active { background: var(--accent); color: white; }
 
-    .nav-sector a {
-      font-size: 11px;
-      padding: 7px 12px;
-    }
-
-    .nav-sector a:hover, .nav-sector a.active {
-      color: var(--accent2);
-      background: var(--bg2);
-    }
-
-    /* LAYOUT */
     .container {
       max-width: 1400px;
       margin: 0 auto;
@@ -150,7 +130,6 @@
       gap: 24px;
     }
 
-    /* FEED */
     .feed-header {
       display: flex;
       justify-content: space-between;
@@ -160,20 +139,9 @@
       border-bottom: 2px solid var(--text);
     }
 
-    .feed-title {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 11px;
-      color: var(--accent);
-      letter-spacing: 1px;
-    }
+    .feed-title { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 1px; }
+    .feed-count { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); }
 
-    .feed-count {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    /* CLUSTER */
     .cluster {
       margin-bottom: 16px;
       border: 1px solid var(--border);
@@ -184,14 +152,23 @@
       background: var(--bg3);
       padding: 8px 16px;
       font-family: 'IBM Plex Mono', monospace;
-      font-size: 10px;
+      font-size: 11px;
       color: var(--accent);
       border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
+      align-items: center;
+      gap: 8px;
     }
 
-    /* ARTICLE CARD */
+    .cluster-keywords { display: flex; gap: 6px; flex-wrap: wrap; }
+    .cluster-kw {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
     .article-card {
       border-left: 3px solid transparent;
       padding: 14px 16px;
@@ -201,13 +178,8 @@
     }
 
     .article-card:last-child { border-bottom: none; }
+    .article-card:hover { border-left-color: var(--accent); background: var(--bg3); }
 
-    .article-card:hover {
-      border-left-color: var(--accent);
-      background: var(--bg3);
-    }
-
-    /* 클러스터 없는 단독 카드 */
     .article-card.standalone {
       background: var(--bg2);
       border: 1px solid var(--border);
@@ -215,9 +187,7 @@
       margin-bottom: 10px;
     }
 
-    .article-card.standalone:hover {
-      border-left-color: var(--accent);
-    }
+    .article-card.standalone:hover { border-left-color: var(--accent); }
 
     .article-header {
       display: flex;
@@ -226,11 +196,7 @@
       margin-bottom: 6px;
     }
 
-    .article-tags {
-      display: flex;
-      gap: 5px;
-      flex-wrap: wrap;
-    }
+    .article-tags { display: flex; gap: 5px; flex-wrap: wrap; }
 
     .tag {
       font-family: 'IBM Plex Mono', monospace;
@@ -241,10 +207,7 @@
       background: var(--bg3);
     }
 
-    .tag.country {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
+    .tag.country { border-color: var(--accent); color: var(--accent); }
 
     .article-time {
       font-family: 'IBM Plex Mono', monospace;
@@ -253,49 +216,17 @@
       white-space: nowrap;
     }
 
-    .article-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1.4;
-      margin-bottom: 5px;
-    }
+    .article-title { font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.4; margin-bottom: 5px; }
+    .article-summary { font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 7px; }
 
-    .article-summary {
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.5;
-      margin-bottom: 7px;
-    }
-
-    .article-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .article-source {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 10px;
-      color: var(--muted);
-    }
-
-    .article-link {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 10px;
-      color: var(--accent2);
-      text-decoration: none;
-    }
-
+    .article-footer { display: flex; justify-content: space-between; align-items: center; }
+    .article-source { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); }
+    .article-link { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--accent2); text-decoration: none; }
     .article-link:hover { text-decoration: underline; }
 
-    /* SIDEBAR */
     .sidebar { display: flex; flex-direction: column; gap: 16px; }
 
-    .widget {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-    }
+    .widget { background: var(--bg2); border: 1px solid var(--border); }
 
     .widget-header {
       padding: 10px 14px;
@@ -322,90 +253,32 @@
 
     .wire-item:hover { background: var(--bg3); }
     .wire-item:last-child { border-bottom: none; }
-
-    .wire-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--muted);
-      margin-top: 5px;
-    }
-
+    .wire-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); margin-top: 5px; }
     .wire-dot.new { background: var(--red); animation: pulse 1.5s infinite; }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-    .wire-text {
-      font-size: 12px;
-      color: var(--text);
-      line-height: 1.4;
-    }
+    .wire-text { font-size: 12px; color: var(--text); line-height: 1.4; }
+    .wire-meta { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 3px; }
 
-    .wire-meta {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 10px;
-      color: var(--muted);
-      margin-top: 3px;
-    }
-
-    .briefing-item {
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--border);
-    }
-
+    .briefing-item { padding: 10px 14px; border-bottom: 1px solid var(--border); }
     .briefing-item:last-child { border-bottom: none; }
-
-    .briefing-region {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 10px;
-      color: var(--accent);
-      margin-bottom: 4px;
-      letter-spacing: 0.5px;
-    }
-
-    .briefing-title {
-      font-size: 12px;
-      color: var(--text);
-      line-height: 1.5;
-      margin-bottom: 2px;
-    }
-
+    .briefing-region { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--accent); margin-bottom: 4px; }
+    .briefing-title { font-size: 12px; color: var(--text); line-height: 1.5; margin-bottom: 2px; }
     .briefing-title a { color: inherit; text-decoration: none; }
     .briefing-title a:hover { color: var(--accent); }
 
     .loading {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 40px;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 12px;
-      color: var(--muted);
-      gap: 8px;
+      display: flex; align-items: center; justify-content: center;
+      padding: 40px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); gap: 8px;
     }
-
     .loading::before {
-      content: '';
-      width: 12px;
-      height: 12px;
-      border: 1px solid var(--accent);
-      border-top-color: transparent;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+      content: ''; width: 12px; height: 12px;
+      border: 1px solid var(--accent); border-top-color: transparent;
+      border-radius: 50%; animation: spin 0.8s linear infinite;
     }
-
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    .empty {
-      padding: 30px;
-      text-align: center;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 11px;
-      color: var(--muted);
-    }
+    .empty { padding: 30px; text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); }
 
     footer {
       border-top: 2px solid var(--text);
@@ -421,14 +294,7 @@
     }
 
     .live-indicator { display: flex; align-items: center; gap: 6px; }
-
-    .live-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--green);
-      animation: pulse 1.5s infinite;
-    }
+    .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 1.5s infinite; }
 
     @media (max-width: 900px) {
       .container { grid-template-columns: 1fr; }
@@ -458,37 +324,42 @@
   </div>
 
   <!-- 지역 탭 -->
-  <nav class="nav-region" id="nav-region">
-    <a href="#" class="active" onclick="filterRegion('all', this); return false;">전체</a>
-    <a href="#" onclick="filterRegion('아프리카', this); return false;">아프리카</a>
-    <a href="#" onclick="filterRegion('동남아시아', this); return false;">동남아시아</a>
-    <a href="#" onclick="filterRegion('동유럽', this); return false;">동유럽</a>
-    <a href="#" onclick="filterRegion('중동', this); return false;">중동</a>
-    <a href="#" onclick="filterRegion('중앙아시아', this); return false;">중앙아시아</a>
-    <a href="#" onclick="filterRegion('남아시아', this); return false;">남아시아</a>
-    <a href="#" onclick="filterRegion('카리브해', this); return false;">카리브해</a>
-    <a href="#" onclick="filterRegion('라틴아메리카', this); return false;">라틴아메리카</a>
-    <a href="#" onclick="filterRegion('오세아니아', this); return false;">오세아니아</a>
+  <nav class="nav-region">
+    <a href="#" class="active" onclick="setRegion('all', this); return false;">전체</a>
+    <a href="#" onclick="setRegion('아프리카', this); return false;">아프리카</a>
+    <a href="#" onclick="setRegion('동남아시아', this); return false;">동남아시아</a>
+    <a href="#" onclick="setRegion('동유럽', this); return false;">동유럽</a>
+    <a href="#" onclick="setRegion('중동', this); return false;">중동</a>
+    <a href="#" onclick="setRegion('중앙아시아', this); return false;">중앙아시아</a>
+    <a href="#" onclick="setRegion('남아시아', this); return false;">남아시아</a>
+    <a href="#" onclick="setRegion('카리브해', this); return false;">카리브해</a>
+    <a href="#" onclick="setRegion('라틴아메리카', this); return false;">라틴아메리카</a>
+    <a href="#" onclick="setRegion('오세아니아', this); return false;">오세아니아</a>
   </nav>
 
   <!-- 분야 탭 -->
-  <nav class="nav-sector" id="nav-sector">
-    <a href="#" class="active" onclick="filterSector('all', this); return false;">전체분야</a>
-    <a href="#" onclick="filterSector('경제', this); return false;">경제</a>
-    <a href="#" onclick="filterSector('금융/증권', this); return false;">금융/증권</a>
-    <a href="#" onclick="filterSector('자원/에너지', this); return false;">자원/에너지</a>
-    <a href="#" onclick="filterSector('산업/기업', this); return false;">산업/기업</a>
-    <a href="#" onclick="filterSector('정치', this); return false;">정치</a>
-    <a href="#" onclick="filterSector('사회', this); return false;">사회</a>
-    <a href="#" onclick="filterSector('IT·과학', this); return false;">IT·과학</a>
-    <a href="#" onclick="filterSector('글로벌경제', this); return false;">글로벌경제</a>
+  <nav class="nav-sector">
+    <a href="#" class="active" onclick="setSector('all', this); return false;">전체분야</a>
+    <a href="#" onclick="setSector('경제', this); return false;">경제</a>
+    <a href="#" onclick="setSector('금융/증권', this); return false;">금융/증권</a>
+    <a href="#" onclick="setSector('자원/에너지', this); return false;">자원/에너지</a>
+    <a href="#" onclick="setSector('산업/기업', this); return false;">산업/기업</a>
+    <a href="#" onclick="setSector('정치', this); return false;">정치</a>
+    <a href="#" onclick="setSector('사회', this); return false;">사회</a>
+    <a href="#" onclick="setSector('IT·과학', this); return false;">IT·과학</a>
+    <a href="#" onclick="setSector('글로벌경제', this); return false;">글로벌경제</a>
+  </nav>
+
+  <!-- 이슈 탭 -->
+  <nav class="nav-issues" id="nav-issues">
+    <a href="#" onclick="return false;" style="pointer-events:none;">🔥 이슈</a>
   </nav>
 </header>
 
 <div class="container">
   <main>
     <div class="feed-header">
-      <span class="feed-title">● LIVE FEED</span>
+      <span class="feed-title" id="feed-title">● LIVE FEED</span>
       <span class="feed-count" id="article-count">로딩 중...</span>
     </div>
     <div id="articles-container">
@@ -531,35 +402,37 @@
 </footer>
 
 <script>
-  // 시간 업데이트
+  // KST 시간
+  function nowKST() {
+    return new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
+  }
+
   function updateTime() {
-    const now = new Date();
-    document.getElementById('datetime').textContent = now.toLocaleString('ko-KR', {
-      year: 'numeric', month: '2-digit', day: '2-digit',
-      hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Seoul'
-    }) + ' KST';
-    document.getElementById('wire-time').textContent = now.toLocaleTimeString('ko-KR', {
-      hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Seoul'
-    });
+    const now = nowKST();
+    const pad = n => String(n).padStart(2, '0');
+    document.getElementById('datetime').textContent =
+      `${now.getFullYear()}.${pad(now.getMonth()+1)}.${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())} KST`;
+    document.getElementById('wire-time').textContent =
+      `${pad(now.getHours())}:${pad(now.getMinutes())}`;
   }
   updateTime();
   setInterval(updateTime, 60000);
 
-  document.getElementById('briefing-date').textContent = new Date().toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
+  document.getElementById('briefing-date').textContent = (() => {
+    const now = nowKST();
+    return `${now.getMonth()+1}월 ${now.getDate()}일`;
+  })();
 
-  // 상대 시간 계산
+  // 업로드 시간 포맷 (KST 기준 절대 시간)
   function formatTime(dateStr) {
     if (!dateStr) return '';
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diff = Math.floor((now - date) / 60000);
-    if (diff < 1) return '방금 전';
-    if (diff < 60) return `${diff}분 전`;
-    if (diff < 1440) return `${Math.floor(diff/60)}시간 전`;
-    return date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' });
+    // DB 시간이 localtime(KST)으로 저장됨
+    const date = new Date(dateStr.includes('T') ? dateStr : dateStr.replace(' ', 'T') + '+09:00');
+    const pad = n => String(n).padStart(2, '0');
+    return `${pad(date.getMonth()+1)}/${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())} KST`;
   }
 
-  // 1분마다 기사 시간 자동 업데이트
+  // 1분마다 시간 갱신
   function refreshTimes() {
     document.querySelectorAll('[data-created]').forEach(el => {
       el.textContent = formatTime(el.getAttribute('data-created'));
@@ -570,27 +443,25 @@
   let allArticles = [];
   let currentRegion = 'all';
   let currentSector = 'all';
+  let currentIssue = null;
+  let issueMap = {};
 
-  // 클러스터링 — 비슷한 기사 묶기
+  // 클러스터링
   function clusterArticles(articles) {
     const clusters = [];
     const used = new Set();
 
     articles.forEach((a, i) => {
       if (used.has(i)) return;
-
-      const words = getKeywords(a.title_en || a.title_ko || '');
+      const wordsA = getKeywords(a.title_en || '');
       const group = [a];
       used.add(i);
 
       articles.forEach((b, j) => {
         if (i === j || used.has(j)) return;
-        const bWords = getKeywords(b.title_en || b.title_ko || '');
-        const overlap = words.filter(w => bWords.includes(w)).length;
-        if (overlap >= 2) {
-          group.push(b);
-          used.add(j);
-        }
+        const wordsB = getKeywords(b.title_en || '');
+        const overlap = wordsA.filter(w => wordsB.includes(w)).length;
+        if (overlap >= 2) { group.push(b); used.add(j); }
       });
 
       clusters.push(group);
@@ -600,11 +471,81 @@
   }
 
   function getKeywords(title) {
-    const stopwords = ['the', 'a', 'an', 'in', 'on', 'at', 'to', 'for', 'of', 'and', 'or', 'is', 'are', 'was', 'as', 'by', 'with', '이', '가', '을', '를', '의', '에', '은', '는'];
+    const stop = ['the','a','an','in','on','at','to','for','of','and','or','is','are','was','as','by','with','its','it','this','that','over','from','after','after','new','says','say'];
     return title.toLowerCase()
-      .replace(/[^a-zA-Z0-9가-힣 ]/g, '')
+      .replace(/[^a-z0-9 ]/g, '')
       .split(' ')
-      .filter(w => w.length > 3 && !stopwords.includes(w));
+      .filter(w => w.length > 3 && !stop.includes(w));
+  }
+
+  // 이슈 탭 생성
+  function buildIssues(clusters) {
+    issueMap = {};
+    const multiClusters = clusters.filter(g => g.length >= 2);
+
+    multiClusters.forEach((group, idx) => {
+      const kws = getKeywords(group.map(a => a.title_en || '').join(' '));
+      const freq = {};
+      kws.forEach(w => freq[w] = (freq[w] || 0) + 1);
+      const topKws = Object.entries(freq).sort((a,b) => b[1]-a[1]).slice(0,2).map(e => e[0]);
+      const label = topKws.map(w => '#' + w).join(' ') || `이슈${idx+1}`;
+      issueMap[label] = group;
+    });
+
+    const nav = document.getElementById('nav-issues');
+    const base = nav.children[0];
+    nav.innerHTML = '';
+    nav.appendChild(base);
+
+    Object.keys(issueMap).forEach(label => {
+      const a = document.createElement('a');
+      a.href = '#';
+      a.textContent = label;
+      a.onclick = (e) => { e.preventDefault(); setIssue(label, a); };
+      nav.appendChild(a);
+    });
+  }
+
+  function setIssue(label, el) {
+    document.querySelectorAll('.nav-issues a').forEach(a => a.classList.remove('active'));
+    el.classList.add('active');
+    currentIssue = label;
+    document.getElementById('feed-title').textContent = `● ${label}`;
+    renderArticles(issueMap[label]);
+  }
+
+  function getFiltered() {
+    if (currentIssue) return issueMap[currentIssue] || [];
+    return allArticles.filter(a => {
+      const regionOk = currentRegion === 'all' ||
+        (a.subcategory || '').includes(currentRegion) ||
+        (a.region || '').includes(currentRegion) ||
+        (a.country || '').includes(currentRegion);
+      const sectorOk = currentSector === 'all' ||
+        (a.category || '') === currentSector ||
+        (a.subcategory || '') === currentSector;
+      return regionOk && sectorOk;
+    });
+  }
+
+  function setRegion(region, el) {
+    document.querySelectorAll('.nav-region a').forEach(a => a.classList.remove('active'));
+    el.classList.add('active');
+    currentRegion = region;
+    currentIssue = null;
+    document.getElementById('feed-title').textContent = '● LIVE FEED';
+    document.querySelectorAll('.nav-issues a').forEach(a => a.classList.remove('active'));
+    renderArticles(getFiltered());
+  }
+
+  function setSector(sector, el) {
+    document.querySelectorAll('.nav-sector a').forEach(a => a.classList.remove('active'));
+    el.classList.add('active');
+    currentSector = sector;
+    currentIssue = null;
+    document.getElementById('feed-title').textContent = '● LIVE FEED';
+    document.querySelectorAll('.nav-issues a').forEach(a => a.classList.remove('active'));
+    renderArticles(getFiltered());
   }
 
   function renderArticles(articles) {
@@ -621,19 +562,21 @@
 
     clusters.forEach(group => {
       if (group.length >= 2) {
-        // 클러스터 (2개 이상 묶인 기사)
-        const topic = group[0].title_ko || group[0].title_en || '';
+        const kws = getKeywords(group.map(a => a.title_en || '').join(' '));
+        const freq = {};
+        kws.forEach(w => freq[w] = (freq[w] || 0) + 1);
+        const topKws = Object.entries(freq).sort((a,b) => b[1]-a[1]).slice(0,3).map(e => '#' + e[0]);
+
         html += `
           <div class="cluster">
             <div class="cluster-header">
-              <span>📌 관련 기사 ${group.length}건</span>
-              <span>${formatTime(group[0].created_at)}</span>
+              <div class="cluster-keywords">${topKws.map(k => `<span class="cluster-kw">${k}</span>`).join('')}</div>
+              <span>관련 기사 ${group.length}건</span>
             </div>
             ${group.map(a => renderCard(a, false)).join('')}
           </div>
         `;
       } else {
-        // 단독 기사
         html += renderCard(group[0], true);
       }
     });
@@ -642,6 +585,7 @@
   }
 
   function renderCard(a, standalone) {
+    const timeStr = formatTime(a.created_at);
     return `
       <div class="article-card ${standalone ? 'standalone' : ''}" onclick="window.open('${a.url}', '_blank')">
         <div class="article-header">
@@ -650,7 +594,7 @@
             ${a.subcategory && a.subcategory !== a.category ? `<span class="tag">${a.subcategory}</span>` : ''}
             ${a.country ? `<span class="tag country">${a.country}</span>` : ''}
           </div>
-          <span class="article-time" data-created="${a.created_at}">${formatTime(a.created_at)}</span>
+          <span class="article-time" data-created="${a.created_at}">${timeStr}</span>
         </div>
         <div class="article-title">${a.title_ko || a.title_en}</div>
         ${a.summary_ko ? `<div class="article-summary">${a.summary_ko}</div>` : ''}
@@ -672,7 +616,7 @@
           <div class="wire-text">
             <a href="${a.url}" target="_blank" style="color:inherit;text-decoration:none;">${a.title_ko || a.title_en}</a>
           </div>
-          <div class="wire-meta" data-created="${a.created_at}">${a.source} · ${formatTime(a.created_at)}</div>
+          <div class="wire-meta">${a.source} · <span data-created="${a.created_at}">${formatTime(a.created_at)}</span></div>
         </div>
       </div>
     `).join('');
@@ -689,44 +633,18 @@
     const html = Object.entries(regions).slice(0, 5).map(([region, items]) => `
       <div class="briefing-item">
         <div class="briefing-region">${region.toUpperCase()}</div>
-        ${items.map(a => `
-          <div class="briefing-title"><a href="${a.url}" target="_blank">· ${a.title_ko || a.title_en}</a></div>
-        `).join('')}
+        ${items.map(a => `<div class="briefing-title"><a href="${a.url}" target="_blank">· ${a.title_ko || a.title_en}</a></div>`).join('')}
       </div>
     `).join('');
     container.innerHTML = html || '<div class="empty">브리핑 준비 중</div>';
   }
 
-  function getFiltered() {
-    return allArticles.filter(a => {
-      const regionMatch = currentRegion === 'all' || a.subcategory === currentRegion || a.region === currentRegion;
-      const sectorMatch = currentSector === 'all' || a.category === currentSector || a.subcategory === currentSector;
-      return regionMatch && sectorMatch;
-    });
-  }
-
-  function filterRegion(region, el) {
-    document.querySelectorAll('.nav-region a').forEach(a => a.classList.remove('active'));
-    el.classList.add('active');
-    currentRegion = region;
-    renderArticles(getFiltered());
-  }
-
-  function filterSector(sector, el) {
-    document.querySelectorAll('.nav-sector a').forEach(a => a.classList.remove('active'));
-    el.classList.add('active');
-    currentSector = sector;
-    renderArticles(getFiltered());
-  }
-
-  // 시세 로드
   async function loadMarketData() {
     try {
       const res = await fetch('data/market_data.json');
-      if (!res.ok) throw new Error('No market data');
+      if (!res.ok) throw new Error();
       const data = await res.json();
-      const ticker = document.getElementById('ticker');
-      ticker.innerHTML = data.indices.map(item => `
+      document.getElementById('ticker').innerHTML = data.indices.map(item => `
         <div class="ticker-item">
           <span class="ticker-label">${item.name}</span>
           <span class="ticker-val">${Number(item.price).toLocaleString()}</span>
@@ -734,19 +652,25 @@
         </div>
       `).join('');
       if (data.updated_at) {
-        document.getElementById('market-updated').textContent = `업데이트: ${data.updated_at}`;
+        // UTC → KST 변환
+        const utcDate = new Date(data.updated_at.replace(' UTC', 'Z'));
+        const kst = new Date(utcDate.getTime() + 9 * 3600000);
+        const pad = n => String(n).padStart(2, '0');
+        document.getElementById('market-updated').textContent =
+          `시세 ${pad(kst.getMonth()+1)}/${pad(kst.getDate())} ${pad(kst.getHours())}:${pad(kst.getMinutes())} KST`;
       }
     } catch (e) {
       document.getElementById('ticker').innerHTML = '<span style="color:var(--muted)">시세 준비 중</span>';
     }
   }
 
-  // 기사 로드
   async function loadArticles() {
     try {
       const res = await fetch('data/articles.json');
-      if (!res.ok) throw new Error('No data');
+      if (!res.ok) throw new Error();
       allArticles = await res.json();
+      const clusters = clusterArticles(allArticles);
+      buildIssues(clusters);
       renderArticles(allArticles);
       renderWire(allArticles.slice(0, 10));
       renderBriefing(allArticles);
