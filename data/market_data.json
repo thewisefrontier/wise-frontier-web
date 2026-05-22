@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-22 01:30 UTC",
+  "updated_at": "2026-05-22 02:00 UTC",
   "indices": [
     {
       "name": "JSE",
@@ -26,14 +26,14 @@
       "name": "IDX",
       "symbol": "^JKSE",
       "price": 6094.94,
-      "change_pct": -3.54,
-      "up": false
+      "change_pct": 0.0,
+      "up": true
     },
     {
       "name": "PSEi",
       "symbol": "PSEI.PS",
-      "price": 5920.7,
-      "change_pct": 0.46,
+      "price": 5979.89,
+      "change_pct": 1.0,
       "up": true
     },
     {
