@@ -423,22 +423,34 @@
     return `${now.getMonth()+1}월 ${now.getDate()}일`;
   })();
 
-  // 업로드 시간 포맷 (KST 기준 절대 시간)
+  // DB created_at은 localtime(KST)으로 저장됨 — 그대로 파싱
+  function parseArticleTime(dateStr) {
+    if (!dateStr) return null;
+    // "2026-05-22 05:31" 형식 → KST로 처리
+    const clean = dateStr.replace(' ', 'T');
+    // 타임존 없으면 KST로 가정 (DB가 localtime=KST)
+    return new Date(clean + '+09:00');
+  }
+
   function formatTime(dateStr) {
     if (!dateStr) return '';
-    // DB 시간이 localtime(KST)으로 저장됨
-    const date = new Date(dateStr.includes('T') ? dateStr : dateStr.replace(' ', 'T') + '+09:00');
+    const date = parseArticleTime(dateStr);
+    if (!date || isNaN(date)) return dateStr;
     const pad = n => String(n).padStart(2, '0');
     return `${pad(date.getMonth()+1)}/${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())} KST`;
   }
 
   // 1분마다 시간 갱신
-  function refreshTimes() {
+  setInterval(() => {
     document.querySelectorAll('[data-created]').forEach(el => {
       el.textContent = formatTime(el.getAttribute('data-created'));
     });
-  }
-  setInterval(refreshTimes, 60000);
+  }, 60000);
+
+  // 페이지네이션
+  const PAGE_SIZE = 50;
+  let currentPage = 1;
+  let currentArticles = [];
 
   let allArticles = [];
   let currentRegion = 'all';
@@ -548,16 +560,23 @@
     renderArticles(getFiltered());
   }
 
-  function renderArticles(articles) {
+  function renderArticles(articles, page = 1) {
+    currentArticles = articles;
+    currentPage = page;
     const container = document.getElementById('articles-container');
-    document.getElementById('article-count').textContent = `총 ${articles.length}건`;
+    const total = articles.length;
+    const totalPages = Math.ceil(total / PAGE_SIZE);
+    const start = (page - 1) * PAGE_SIZE;
+    const pageArticles = articles.slice(start, start + PAGE_SIZE);
+
+    document.getElementById('article-count').textContent = `총 ${total}건`;
 
     if (!articles.length) {
       container.innerHTML = '<div class="empty">해당 기사가 없습니다.</div>';
       return;
     }
 
-    const clusters = clusterArticles(articles);
+    const clusters = clusterArticles(pageArticles);
     let html = '';
 
     clusters.forEach(group => {
@@ -580,6 +599,15 @@
         html += renderCard(group[0], true);
       }
     });
+
+    // 페이지네이션
+    if (totalPages > 1) {
+      html += `<div style="display:flex;gap:8px;justify-content:center;padding:24px;font-family:'IBM Plex Mono',monospace;font-size:12px;">`;
+      if (page > 1) html += `<a href="#" onclick="renderArticles(currentArticles,${page-1});return false;" style="color:var(--accent2);">← 이전</a>`;
+      html += `<span style="color:var(--muted);">${page} / ${totalPages}</span>`;
+      if (page < totalPages) html += `<a href="#" onclick="renderArticles(currentArticles,${page+1});window.scrollTo(0,0);return false;" style="color:var(--accent2);">다음 →</a>`;
+      html += `</div>`;
+    }
 
     container.innerHTML = html;
   }
@@ -652,12 +680,14 @@
         </div>
       `).join('');
       if (data.updated_at) {
-        // UTC → KST 변환
-        const utcDate = new Date(data.updated_at.replace(' UTC', 'Z'));
-        const kst = new Date(utcDate.getTime() + 9 * 3600000);
+        // updated_at: "2026-05-22 14:30 UTC" 형식
+        const utcStr = data.updated_at.replace(' UTC', 'Z').replace(' ', 'T');
+        const utcDate = new Date(utcStr);
         const pad = n => String(n).padStart(2, '0');
+        // KST = UTC + 9
+        const kstDate = new Date(utcDate.getTime() + 9 * 3600 * 1000);
         document.getElementById('market-updated').textContent =
-          `시세 ${pad(kst.getMonth()+1)}/${pad(kst.getDate())} ${pad(kst.getHours())}:${pad(kst.getMinutes())} KST`;
+          `시세 ${pad(kstDate.getUTCMonth()+1)}/${pad(kstDate.getUTCDate())} ${pad(kstDate.getUTCHours())}:${pad(kstDate.getUTCMinutes())} KST`;
       }
     } catch (e) {
       document.getElementById('ticker').innerHTML = '<span style="color:var(--muted)">시세 준비 중</span>';
