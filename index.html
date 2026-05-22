@@ -423,21 +423,22 @@
     return `${now.getMonth()+1}월 ${now.getDate()}일`;
   })();
 
-  // DB created_at은 localtime(KST)으로 저장됨 — 그대로 파싱
+  // DB created_at은 UTC로 저장됨
   function parseArticleTime(dateStr) {
     if (!dateStr) return null;
-    // "2026-05-22 05:31" 형식 → KST로 처리
-    const clean = dateStr.replace(' ', 'T');
-    // 타임존 없으면 KST로 가정 (DB가 localtime=KST)
-    return new Date(clean + '+09:00');
+    // "2026-05-22 06:01" → UTC로 파싱 후 KST 변환
+    const clean = dateStr.replace(' ', 'T') + 'Z';
+    return new Date(clean);
   }
 
   function formatTime(dateStr) {
     if (!dateStr) return '';
     const date = parseArticleTime(dateStr);
     if (!date || isNaN(date)) return dateStr;
+    // KST = UTC + 9
+    const kst = new Date(date.getTime() + 9 * 3600 * 1000);
     const pad = n => String(n).padStart(2, '0');
-    return `${pad(date.getMonth()+1)}/${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())} KST`;
+    return `${pad(kst.getUTCMonth()+1)}/${pad(kst.getUTCDate())} ${pad(kst.getUTCHours())}:${pad(kst.getUTCMinutes())} KST`;
   }
 
   // 1분마다 시간 갱신
