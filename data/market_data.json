@@ -1,12 +1,12 @@
 {
-  "updated_at": "2026-05-22 10:01 UTC",
+  "updated_at": "2026-05-22 10:31 UTC",
   "indices": [
     {
       "name": "JSE",
       "symbol": "^J203.JO",
-      "price": 114041.45,
-      "change_pct": -0.01,
-      "up": false
+      "price": 114070.02,
+      "change_pct": 0.02,
+      "up": true
     },
     {
       "name": "EGX30",
