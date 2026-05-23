@@ -612,8 +612,8 @@
       renderBriefing(allArticles);
     } catch(e) {
       document.getElementById('articles-container').innerHTML = `<div class="empty">아직 기사 데이터가 없습니다.<br>곧 업데이트됩니다.</div>`;
-      document.getElementById('wire-container').innerHTML = '<div class="empty">준비 중</div>';
-      document.getElementById('issues-container').innerHTML = '<div class="empty">준비 중</div>';
+      const wire = document.getElementById('wire-container');
+      if (wire) wire.innerHTML = '<div class="empty">준비 중</div>';
     }
   }
 
