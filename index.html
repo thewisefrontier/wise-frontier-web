@@ -456,33 +456,16 @@
     renderArticles(issueMap[label]);
   }
 
-  // 이슈 위젯 — 3건 이상 묶인 클러스터만 표시
+  // 이슈 — 3건 이상 묶인 클러스터만 저장
   function buildIssues(clusters) {
     issueMap = {};
     const significant = clusters.filter(g => g.length >= 3);
-
     significant.forEach(group => {
       const kws = getClusterKeywords(group);
       if (kws.length === 0) return;
       const label = kws.join(' ');
       issueMap[label] = group;
     });
-
-    const container = document.getElementById('issues-container');
-    const entries = Object.entries(issueMap);
-    document.getElementById('issue-count').textContent = `${entries.length}건`;
-
-    if (!entries.length) {
-      container.innerHTML = '<div class="empty">주요 이슈 없음</div>';
-      return;
-    }
-
-    container.innerHTML = entries.map(([label, group]) => `
-      <div class="issue-item" onclick="setIssue('${label.replace(/'/g,"\\'")}', this)">
-        <span class="issue-kw">${label}</span>
-        <span class="issue-count">${group.length}건</span>
-      </div>
-    `).join('');
   }
 
   function renderArticles(articles, page = 1) {
