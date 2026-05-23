@@ -180,6 +180,7 @@
     <a href="#" onclick="setRegion('카리브해',this);return false;">카리브해</a>
     <a href="#" onclick="setRegion('라틴아메리카',this);return false;">라틴아메리카</a>
     <a href="#" onclick="setRegion('오세아니아',this);return false;">오세아니아</a>
+    <a href="#" onclick="setIssueMode(this);return false;" style="margin-left:auto;color:var(--accent);font-weight:700;">🔥 이슈</a>
   </nav>
 
   <!-- 분야 탭 -->
@@ -206,13 +207,13 @@
   </main>
 
   <aside class="sidebar">
-    <!-- 이슈 위젯 — 사이드바 상단 -->
+    <!-- 브리핑 — 상단 -->
     <div class="widget">
       <div class="widget-header">
-        <span>🔥 주요 이슈</span>
-        <span id="issue-count"></span>
+        <span>오늘의 브리핑</span>
+        <span id="briefing-date"></span>
       </div>
-      <div id="issues-container"><div class="empty">로딩 중</div></div>
+      <div id="briefing-container"><div class="empty">데이터 준비 중</div></div>
     </div>
 
     <!-- WIRE -->
@@ -222,15 +223,6 @@
         <span id="wire-time"></span>
       </div>
       <div id="wire-container"><div class="loading">로딩 중</div></div>
-    </div>
-
-    <!-- 브리핑 -->
-    <div class="widget">
-      <div class="widget-header">
-        <span>오늘의 브리핑</span>
-        <span id="briefing-date"></span>
-      </div>
-      <div id="briefing-container"><div class="empty">데이터 준비 중</div></div>
     </div>
   </aside>
 </div>
@@ -393,8 +385,8 @@
     document.querySelectorAll('.nav-region a').forEach(a => a.classList.remove('active'));
     el.classList.add('active');
     currentRegion = region;
+    currentIssue = null;
     document.getElementById('feed-title').textContent = '● LIVE FEED';
-    document.querySelectorAll('.issue-item').forEach(i => i.classList.remove('active'));
     renderArticles(getFiltered());
   }
 
@@ -402,14 +394,64 @@
     document.querySelectorAll('.nav-sector a').forEach(a => a.classList.remove('active'));
     el.classList.add('active');
     currentSector = sector;
+    currentIssue = null;
     document.getElementById('feed-title').textContent = '● LIVE FEED';
-    document.querySelectorAll('.issue-item').forEach(i => i.classList.remove('active'));
     renderArticles(getFiltered());
+  }
+
+  function setIssueMode(el) {
+    document.querySelectorAll('.nav-region a').forEach(a => a.classList.remove('active'));
+    el.classList.add('active');
+    currentIssue = 'all';
+    document.getElementById('feed-title').textContent = '🔥 주요 이슈';
+    // 이슈 목록을 메인 피드에 표시
+    renderIssueList();
+  }
+
+  function renderIssueList() {
+    const container = document.getElementById('articles-container');
+    const entries = Object.entries(issueMap);
+    document.getElementById('article-count').textContent = `${entries.length}개 이슈`;
+
+    if (!entries.length) {
+      container.innerHTML = '<div class="empty">주요 이슈가 없습니다.</div>';
+      return;
+    }
+
+    container.innerHTML = entries.map(([label, group]) => `
+      <div class="cluster" style="cursor:pointer;" onclick="showIssue('${label.replace(/'/g,"\\'")}')">
+        <div class="cluster-header">
+          <div class="cluster-keywords"><span class="cluster-kw">${group[0].title_ko || group[0].title_en}</span></div>
+          <span style="color:var(--muted);font-size:10px;">관련 기사 ${group.length}건 →</span>
+        </div>
+        ${group.slice(0,2).map(a => `
+          <div class="article-card" onclick="event.stopPropagation();window.open('${a.url}','_blank')">
+            <div class="article-header">
+              <div class="article-tags">
+                <span class="tag">${a.category||''}</span>
+                ${a.country ? `<span class="tag country">${a.country}</span>` : ''}
+              </div>
+              <span class="article-time">${formatTime(a.created_at)}</span>
+            </div>
+            <div class="article-title">${a.title_ko||a.title_en}</div>
+            <div class="article-footer">
+              <span class="article-source">📎 ${a.source}</span>
+              <a class="article-link" href="${a.url}" target="_blank" onclick="event.stopPropagation()">원문 보기 →</a>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `).join('');
+  }
+
+  function showIssue(label) {
+    document.getElementById('feed-title').textContent = `🔥 ${label.substring(0,20)}...`;
+    renderArticles(issueMap[label]);
   }
 
   function setIssue(label, el) {
     document.querySelectorAll('.issue-item').forEach(i => i.classList.remove('active'));
-    el.classList.add('active');
+    if (el) el.classList.add('active');
     document.getElementById('feed-title').textContent = `● ${label}`;
     renderArticles(issueMap[label]);
   }
