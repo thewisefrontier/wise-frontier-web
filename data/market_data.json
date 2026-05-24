@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-24 08:30 UTC",
+  "updated_at": "2026-05-24 09:01 UTC",
   "indices": [
     {
       "name": "JSE",
@@ -11,8 +11,8 @@
     {
       "name": "EGX30",
       "symbol": "^CASE30",
-      "price": 52568.4,
-      "change_pct": 1.22,
+      "price": 52687.4,
+      "change_pct": 1.45,
       "up": true
     },
     {
