@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-25 04:01 UTC",
+  "updated_at": "2026-05-25 04:30 UTC",
   "indices": [
     {
       "name": "JSE",
@@ -18,22 +18,22 @@
     {
       "name": "SET",
       "symbol": "^SET.BK",
-      "price": 1553.74,
-      "change_pct": 0.98,
+      "price": 1554.39,
+      "change_pct": 1.02,
       "up": true
     },
     {
       "name": "IDX",
       "symbol": "^JKSE",
-      "price": 6171.61,
-      "change_pct": 0.16,
+      "price": 6227.98,
+      "change_pct": 1.07,
       "up": true
     },
     {
       "name": "PSEi",
       "symbol": "PSEI.PS",
-      "price": 6031.53,
-      "change_pct": 1.18,
+      "price": 6035.69,
+      "change_pct": 1.25,
       "up": true
     },
     {
