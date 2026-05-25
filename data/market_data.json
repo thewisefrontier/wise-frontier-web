@@ -1,25 +1,25 @@
 {
-  "updated_at": "2026-05-25 09:31 UTC",
+  "updated_at": "2026-05-25 10:01 UTC",
   "indices": [
     {
       "name": "JSE",
       "symbol": "^J203.JO",
-      "price": 115412.68,
-      "change_pct": 1.94,
+      "price": 115385.33,
+      "change_pct": 1.92,
       "up": true
     },
     {
       "name": "EGX30",
       "symbol": "^CASE30",
-      "price": 52618.3,
-      "change_pct": -0.46,
+      "price": 52647.2,
+      "change_pct": -0.41,
       "up": false
     },
     {
       "name": "SET",
       "symbol": "^SET.BK",
-      "price": 1550.06,
-      "change_pct": 0.74,
+      "price": 1550.33,
+      "change_pct": 0.76,
       "up": true
     },
     {
