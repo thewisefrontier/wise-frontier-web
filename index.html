@@ -150,6 +150,71 @@
     .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 1.5s infinite; }
 
     @media (max-width: 900px) { .container { grid-template-columns: 1fr; } .sidebar { display: none; } }
+
+    /* 검색 */
+    .search-input {
+      width: 220px; padding: 5px 10px;
+      border: 1px solid var(--border); background: var(--bg3);
+      font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text);
+      outline: none; transition: border-color 0.2s, width 0.3s;
+    }
+    .search-input:focus { border-color: var(--accent); width: 280px; }
+    .search-input::placeholder { color: var(--muted); }
+    .search-clear {
+      font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+      color: var(--muted); cursor: pointer; display: none;
+      background: none; border: 1px solid var(--border); padding: 5px 8px;
+    }
+    .search-clear:hover { color: var(--accent); border-color: var(--accent); }
+    .search-result-info {
+      font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); white-space: nowrap;
+    }
+
+    /* 모달 */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+      z-index: 1000; align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--bg2); border: 1px solid var(--border);
+      max-width: 680px; width: 100%; max-height: 85vh;
+      overflow-y: auto; position: relative;
+      animation: modalIn 0.18s ease;
+    }
+    @keyframes modalIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+    .modal-header {
+      padding: 16px 20px; border-bottom: 2px solid var(--text);
+      display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+    }
+    .modal-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px; }
+    .modal-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; line-height: 1.4; color: var(--text); }
+    .modal-close {
+      background: none; border: none; cursor: pointer; font-size: 20px;
+      color: var(--muted); line-height: 1; padding: 4px; flex-shrink: 0;
+    }
+    .modal-close:hover { color: var(--text); }
+    .modal-body { padding: 20px; }
+    .modal-meta {
+      display: flex; gap: 16px; font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px; color: var(--muted); margin-bottom: 16px; flex-wrap: wrap;
+    }
+    .modal-summary {
+      font-size: 14px; line-height: 1.8; color: var(--text);
+      border-left: 3px solid var(--accent); padding-left: 14px;
+      margin-bottom: 20px; background: var(--bg3); padding: 14px 14px 14px 17px;
+    }
+    .modal-footer {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 20px; border-top: 1px solid var(--border); background: var(--bg3);
+    }
+    .modal-link {
+      display: inline-block; padding: 8px 18px;
+      background: var(--accent); color: #fff; font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px; text-decoration: none; transition: background 0.2s;
+    }
+    .modal-link:hover { background: #7a5225; }
+    .modal-source { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); }
   </style>
 </head>
 <body>
@@ -165,7 +230,14 @@
 
   <div class="header-main">
     <a href="/" class="logo">The Wise <span>Frontier</span></a>
-    <div class="header-meta">프론티어 마켓 전문 미디어<br>AFRICA · SOUTHEAST ASIA · EASTERN EUROPE</div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+      <div class="header-meta">프론티어 마켓 전문 미디어</div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <input class="search-input" id="search-input" type="text" placeholder="🔍 기사 검색..." autocomplete="off" oninput="onSearch(this.value)" onkeydown="if(event.key==='Escape'){clearSearch();}" />
+        <button class="search-clear" id="search-clear" onclick="clearSearch()">✕</button>
+        <span class="search-result-info" id="search-info"></span>
+      </div>
+    </div>
   </div>
 
   <!-- 지역 탭 -->
@@ -196,6 +268,27 @@
     <a href="#" onclick="setSector('글로벌경제',this);return false;">글로벌경제</a>
   </nav>
 </header>
+
+<!-- 기사 상세 모달 -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal-box">
+    <div class="modal-header">
+      <div style="flex:1">
+        <div class="modal-tags" id="modal-tags"></div>
+        <div class="modal-title" id="modal-title"></div>
+      </div>
+      <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-meta" id="modal-meta"></div>
+      <div class="modal-summary" id="modal-summary"></div>
+    </div>
+    <div class="modal-footer">
+      <span class="modal-source" id="modal-source"></span>
+      <a class="modal-link" id="modal-link" href="#" target="_blank">원문 보기 →</a>
+    </div>
+  </div>
+</div>
 
 <div class="container">
   <main>
@@ -336,6 +429,7 @@
   let currentSector = 'all';
   let currentArticles = [];
   let issueMap = {};
+  let currentQuery = '';
 
   // 지역/분야 필터 — DB 컬럼과 정확히 매핑
   const REGION_MAP = {
@@ -378,7 +472,42 @@
   }
 
   function getFiltered() {
-    return allArticles.filter(a => matchRegion(a, currentRegion) && matchSector(a, currentSector));
+    let results = allArticles.filter(a => matchRegion(a, currentRegion) && matchSector(a, currentSector));
+    if (currentQuery) {
+      const q = currentQuery.toLowerCase();
+      results = results.filter(a =>
+        (a.title_ko||'').toLowerCase().includes(q) ||
+        (a.title_en||'').toLowerCase().includes(q) ||
+        (a.summary_ko||'').toLowerCase().includes(q) ||
+        (a.country||'').toLowerCase().includes(q) ||
+        (a.source||'').toLowerCase().includes(q)
+      );
+    }
+    return results;
+  }
+
+  function onSearch(val) {
+    currentQuery = val.trim();
+    const clearBtn = document.getElementById('search-clear');
+    const info = document.getElementById('search-info');
+    clearBtn.style.display = currentQuery ? 'inline-block' : 'none';
+    const filtered = getFiltered();
+    if (currentQuery) {
+      info.textContent = `"${currentQuery}" — ${filtered.length}건`;
+    } else {
+      info.textContent = '';
+    }
+    document.getElementById('feed-title').textContent = currentQuery ? `🔍 검색: ${currentQuery}` : '● LIVE FEED';
+    renderArticles(filtered);
+  }
+
+  function clearSearch() {
+    document.getElementById('search-input').value = '';
+    currentQuery = '';
+    document.getElementById('search-clear').style.display = 'none';
+    document.getElementById('search-info').textContent = '';
+    document.getElementById('feed-title').textContent = '● LIVE FEED';
+    renderArticles(getFiltered());
   }
 
   function setRegion(region, el) {
@@ -424,8 +553,10 @@
           <div class="cluster-keywords"><span class="cluster-kw">${group[0].title_ko || group[0].title_en}</span></div>
           <span style="color:var(--muted);font-size:10px;">관련 기사 ${group.length}건 →</span>
         </div>
-        ${group.slice(0,2).map(a => `
-          <div class="article-card" onclick="event.stopPropagation();window.open('${a.url}','_blank')">
+        ${group.slice(0,2).map(a => {
+          const idx = allArticles.indexOf(a);
+          return `
+          <div class="article-card" onclick="event.stopPropagation();openModal(allArticles[${idx}])">
             <div class="article-header">
               <div class="article-tags">
                 <span class="tag">${a.category||''}</span>
@@ -439,7 +570,7 @@
               <a class="article-link" href="${a.url}" target="_blank" onclick="event.stopPropagation()">원문 보기 →</a>
             </div>
           </div>
-        `).join('')}
+        `}).join('')}
       </div>
     `).join('');
   }
@@ -513,8 +644,9 @@
   }
 
   function renderCard(a, standalone) {
+    const idx = allArticles.indexOf(a);
     return `
-      <div class="article-card ${standalone?'standalone':''}" onclick="window.open('${a.url}','_blank')">
+      <div class="article-card ${standalone?'standalone':''}" onclick="openModal(allArticles[${idx}])">
         <div class="article-header">
           <div class="article-tags">
             <span class="tag">${a.category||''}</span>
@@ -560,6 +692,37 @@
       </div>`).join('');
     container.innerHTML = html || '<div class="empty">브리핑 준비 중</div>';
   }
+
+  function openModal(a) {
+    document.getElementById('modal-tags').innerHTML = `
+      ${a.category ? `<span class="tag">${a.category}</span>` : ''}
+      ${a.subcategory && a.subcategory !== a.category ? `<span class="tag">${a.subcategory}</span>` : ''}
+      ${a.country ? `<span class="tag country">${a.country}</span>` : ''}
+    `;
+    document.getElementById('modal-title').textContent = a.title_ko || a.title_en;
+    document.getElementById('modal-meta').innerHTML = `
+      <span>🕐 ${formatTime(a.created_at)}</span>
+      <span>📎 ${a.source}</span>
+      ${a.region ? `<span>🌍 ${a.region}</span>` : ''}
+    `;
+    const summary = a.summary_ko || a.summary_en || '요약 정보가 없습니다.';
+    document.getElementById('modal-summary').textContent = summary;
+    document.getElementById('modal-source').textContent = a.source || '';
+    document.getElementById('modal-link').href = a.url;
+    document.getElementById('modal-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal(e) {
+    if (e.target === document.getElementById('modal-overlay')) closeModalDirect();
+  }
+
+  function closeModalDirect() {
+    document.getElementById('modal-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalDirect(); });
 
   async function loadMarketData() {
     try {
