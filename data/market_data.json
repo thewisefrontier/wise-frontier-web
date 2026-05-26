@@ -1,60 +1,60 @@
 {
-  "updated_at": "2026-05-23 23:30 UTC",
+  "updated_at": "2026-05-26 14:01 UTC",
   "indices": [
     {
       "name": "JSE",
       "symbol": "^J203.JO",
-      "price": 113215.96,
-      "change_pct": -0.73,
+      "price": 115974.05,
+      "change_pct": -0.02,
       "up": false
     },
     {
       "name": "EGX30",
       "symbol": "^CASE30",
-      "price": 52091.0,
-      "change_pct": 0.3,
-      "up": true
+      "price": 52658.8,
+      "change_pct": -0.38,
+      "up": false
     },
     {
       "name": "SET",
       "symbol": "^SET.BK",
-      "price": 1538.67,
-      "change_pct": 0.39,
+      "price": 1553.36,
+      "change_pct": 0.2,
       "up": true
     },
     {
       "name": "IDX",
       "symbol": "^JKSE",
-      "price": 6162.05,
-      "change_pct": 1.1,
-      "up": true
+      "price": 6130.19,
+      "change_pct": -1.23,
+      "up": false
     },
     {
       "name": "PSEi",
       "symbol": "PSEI.PS",
-      "price": 5961.4,
-      "change_pct": 0.69,
-      "up": true
+      "price": 5963.24,
+      "change_pct": -0.77,
+      "up": false
     },
     {
       "name": "USD/NGN",
       "symbol": "USDNGN=X",
-      "price": 1370.47,
-      "change_pct": -0.02,
-      "up": false
+      "price": 1371.29,
+      "change_pct": 0.3,
+      "up": true
     },
     {
       "name": "USD/KES",
       "symbol": "USDKES=X",
-      "price": 129.7,
-      "change_pct": 0.97,
+      "price": 129.59,
+      "change_pct": 0.85,
       "up": true
     },
     {
       "name": "USD/ZAR",
       "symbol": "USDZAR=X",
-      "price": 16.46,
-      "change_pct": 0.03,
+      "price": 16.37,
+      "change_pct": 0.16,
       "up": true
     }
   ]
