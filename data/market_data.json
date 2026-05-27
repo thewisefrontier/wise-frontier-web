@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-27 03:32 UTC",
+  "updated_at": "2026-05-27 03:54 UTC",
   "indices": [
     {
       "name": "JSE",
@@ -18,8 +18,8 @@
     {
       "name": "SET",
       "symbol": "^SET.BK",
-      "price": 1578.3,
-      "change_pct": 1.61,
+      "price": 1574.9,
+      "change_pct": 1.39,
       "up": true
     },
     {
