@@ -572,7 +572,7 @@
       </div>
       <div class="expand-summary">${a.summary_ko || a.summary_en || '요약 정보가 없습니다.'}</div>
       <div class="expand-footer">
-        ${!isOwn ? `<a class="expand-link" href="${a.url}" target="_blank">원문 보기 →</a>` : '<span></span>'}
+        ${!isOwn ? `<a class="expand-link" href="${a.url}" target="_blank">원문 보기 →</a>` : '<span style="font-family:\'IBM Plex Mono\',monospace;font-size:11px;color:var(--accent);font-weight:700;">ⓒ The Wise Frontier</span>'}
         <button class="expand-close" onclick="closeExpand()">닫기</button>
       </div>`;
     card.after(panel);
