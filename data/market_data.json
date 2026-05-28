@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-28 03:32 UTC",
+  "updated_at": "2026-05-28 04:03 UTC",
   "indices": [
     {
       "name": "JSE",
@@ -18,8 +18,8 @@
     {
       "name": "SET",
       "symbol": "^SET.BK",
-      "price": 1564.28,
-      "change_pct": -0.42,
+      "price": 1559.41,
+      "change_pct": -0.73,
       "up": false
     },
     {
@@ -32,8 +32,8 @@
     {
       "name": "PSEi",
       "symbol": "PSEI.PS",
-      "price": 5880.77,
-      "change_pct": -1.38,
+      "price": 5858.79,
+      "change_pct": -1.75,
       "up": false
     },
     {
