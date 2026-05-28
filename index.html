@@ -299,6 +299,7 @@
       </div>
     </div>
     <nav class="nav-sector">
+      <a href="#" onclick="setOwn(this);return false;" data-own style="color:var(--accent);border-right:1px solid var(--border);">✦ TWF</a>
       <a href="#" class="active" onclick="setSector('all',this);return false;">전체</a>
       <a href="#" onclick="setSector('경제',this);return false;" data-sector>경제</a>
       <a href="#" onclick="setSector('금융/증권',this);return false;" data-sector>금융/증권</a>
@@ -614,13 +615,35 @@
     renderArticles(getFiltered());
   }
 
+  function setOwn(el) {
+    clearAllActive();
+    if (el) el.classList.add('active');
+    currentRegion = 'all';
+    currentSector = 'all';
+    currentIssue = null;
+    closeExpand();
+    document.getElementById('region-label').textContent = '전체 지역';
+    document.getElementById('region-btn').classList.remove('active');
+    document.getElementById('feed-title').textContent = '✦ TWF 자체 기사';
+    const own = allArticles.filter(a => a.source === 'The Wise Frontier');
+    renderArticles(own);
+  }
+
   function setIssueMode(el) {
     clearAllActive();
     if (el) el.classList.add('active');
     currentIssue = 'all';
     closeExpand();
     document.getElementById('feed-title').textContent = '🔥 주요 이슈';
-    renderIssueList();
+    // 자체 기사 중 이슈 기사만 (cluster_ 타입)
+    const issueArticles = allArticles.filter(a =>
+      a.source === 'The Wise Frontier' && (a.subcategory || '').startsWith('cluster_')
+    );
+    if (issueArticles.length) {
+      renderArticles(issueArticles);
+    } else {
+      renderIssueList();
+    }
   }
 
   function filterByTag(type, value, event) {
