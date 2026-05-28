@@ -51,6 +51,96 @@
     .nav-sector a { font-size: 11px; padding: 7px 12px; }
     .nav-sector a:hover, .nav-sector a.active { color: var(--accent2); background: var(--bg2); }
 
+    /* 검색 */
+    .search-input {
+      width: 200px; padding: 5px 10px;
+      border: 1px solid var(--border); background: var(--bg3);
+      font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text);
+      outline: none; transition: border-color 0.2s, width 0.3s;
+    }
+    .search-input:focus { border-color: var(--accent); width: 260px; }
+    .search-input::placeholder { color: var(--muted); }
+    .search-clear {
+      font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+      color: var(--muted); cursor: pointer; display: none;
+      background: none; border: 1px solid var(--border); padding: 5px 8px;
+    }
+    .search-clear:hover { color: var(--accent); border-color: var(--accent); }
+    .search-result-info { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); white-space: nowrap; }
+
+    /* 드롭다운 탭 */
+    .nav-wrap { display: flex; align-items: stretch; border-bottom: 1px solid var(--border); background: var(--bg2); }
+    .region-dropdown { position: relative; flex-shrink: 0; }
+    .region-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 9px 14px; font-size: 12px; font-weight: 500; color: var(--muted);
+      font-family: 'IBM Plex Mono', monospace; background: var(--bg3);
+      border: none; border-right: 1px solid var(--border); cursor: pointer;
+      white-space: nowrap; height: 100%; transition: color 0.2s;
+    }
+    .region-btn:hover, .region-btn.active { color: var(--accent); }
+    .region-btn .arrow { font-size: 9px; transition: transform 0.2s; }
+    .region-btn.open .arrow { transform: rotate(180deg); }
+    .region-menu {
+      display: none; position: absolute; top: 100%; left: 0; z-index: 200;
+      background: var(--bg2); border: 1px solid var(--border); border-top: none;
+      min-width: 140px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .region-menu.open { display: block; }
+    .region-menu a {
+      display: block; padding: 8px 14px; font-size: 12px; font-weight: 500;
+      color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--border);
+      white-space: nowrap; transition: color 0.2s, background 0.2s;
+    }
+    .region-menu a:last-child { border-bottom: none; }
+    .region-menu a:hover, .region-menu a.active { color: var(--accent); background: var(--bg3); }
+    .nav-sector { display: flex; flex: 1; overflow-x: auto; }
+    .nav-sector a {
+      padding: 9px 14px; font-size: 12px; font-weight: 500; color: var(--muted);
+      text-decoration: none; border-right: 1px solid var(--border); white-space: nowrap;
+      transition: color 0.2s, background 0.2s; font-family: 'IBM Plex Mono', monospace;
+    }
+    .nav-sector a:hover, .nav-sector a.active { color: var(--accent2); background: var(--bg3); }
+    .nav-issue {
+      margin-left: auto; padding: 9px 14px; font-size: 12px; font-weight: 700;
+      color: var(--accent); text-decoration: none; border-left: 1px solid var(--border);
+      white-space: nowrap; cursor: pointer; font-family: 'IBM Plex Mono', monospace;
+      transition: background 0.2s;
+    }
+    .nav-issue:hover, .nav-issue.active { background: var(--bg3); }
+
+    /* 인라인 확장 */
+    .article-expand {
+      display: none; background: var(--bg3);
+      border-top: 2px solid var(--accent); border-bottom: 1px solid var(--border);
+      padding: 16px 18px; animation: expandIn 0.18s ease;
+    }
+    .article-expand.open { display: block; }
+    @keyframes expandIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+    .expand-summary {
+      font-size: 13px; line-height: 1.8; color: var(--text);
+      border-left: 3px solid var(--accent); padding: 12px 14px;
+      background: var(--bg2); margin-bottom: 12px;
+    }
+    .expand-meta {
+      display: flex; gap: 14px; font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px; color: var(--muted); margin-bottom: 10px; flex-wrap: wrap;
+    }
+    .expand-footer { display: flex; justify-content: space-between; align-items: center; }
+    .expand-link {
+      display: inline-block; padding: 6px 16px;
+      background: var(--accent); color: #fff; font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px; text-decoration: none; transition: background 0.2s;
+    }
+    .expand-link:hover { background: #7a5225; }
+    .expand-close {
+      background: none; border: 1px solid var(--border); cursor: pointer;
+      font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+      color: var(--muted); padding: 5px 12px;
+    }
+    .expand-close:hover { border-color: var(--text); color: var(--text); }
+    .article-card.expanded { border-left-color: var(--accent); background: var(--bg3); }
+
     /* LAYOUT */
     .container {
       max-width: 1400px; margin: 0 auto; padding: 24px;
@@ -178,37 +268,49 @@
 
   <div class="header-main">
     <a href="/" class="logo">The Wise <span>Frontier</span></a>
-    <div class="header-meta">프론티어 마켓 전문 미디어<br>AFRICA · SOUTHEAST ASIA · EASTERN EUROPE</div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+      <div class="header-meta">프론티어 마켓 전문 미디어</div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <input class="search-input" id="search-input" type="text" placeholder="🔍 기사 검색..." autocomplete="off" oninput="onSearch(this.value)" onkeydown="if(event.key==='Escape'){clearSearch();}" />
+        <button class="search-clear" id="search-clear" onclick="clearSearch()">✕</button>
+        <span class="search-result-info" id="search-info"></span>
+      </div>
+    </div>
   </div>
 
-  <!-- 지역 탭 -->
-  <nav class="nav-region">
-    <a href="#" class="active" onclick="setRegion('all',this);return false;">전체</a>
-    <a href="#" onclick="setRegion('아프리카',this);return false;">아프리카</a>
-    <a href="#" onclick="setRegion('동남아시아',this);return false;">동남아시아</a>
-    <a href="#" onclick="setRegion('동유럽',this);return false;">동유럽</a>
-    <a href="#" onclick="setRegion('중동',this);return false;">중동</a>
-    <a href="#" onclick="setRegion('중앙아시아',this);return false;">중앙아시아</a>
-    <a href="#" onclick="setRegion('남아시아',this);return false;">남아시아</a>
-    <a href="#" onclick="setRegion('카리브해',this);return false;">카리브해</a>
-    <a href="#" onclick="setRegion('라틴아메리카',this);return false;">라틴아메리카</a>
-    <a href="#" onclick="setRegion('오세아니아',this);return false;">오세아니아</a>
-    <a href="#" onclick="setIssueMode(this);return false;" style="margin-left:auto;color:var(--accent);font-weight:700;">🔥 이슈</a>
-  </nav>
-
-  <!-- 분야 탭 -->
-  <nav class="nav-sector">
-    <a href="#" class="active" onclick="setSector('all',this);return false;">전체분야</a>
-    <a href="#" onclick="setSector('경제',this);return false;">경제</a>
-    <a href="#" onclick="setSector('금융/증권',this);return false;">금융/증권</a>
-    <a href="#" onclick="setSector('자원/에너지',this);return false;">자원/에너지</a>
-    <a href="#" onclick="setSector('산업/기업',this);return false;">산업/기업</a>
-    <a href="#" onclick="setSector('정치',this);return false;">정치</a>
-    <a href="#" onclick="setSector('사회',this);return false;">사회</a>
-    <a href="#" onclick="setSector('IT·과학',this);return false;">IT·과학</a>
-    <a href="#" onclick="setSector('글로벌경제',this);return false;">글로벌경제</a>
-  </nav>
-</header>
+  <!-- 필터 바: 지역 드롭다운 + 분야 탭 -->
+  <div class="nav-wrap" id="nav-tabs">
+    <div class="region-dropdown" id="region-dropdown">
+      <button class="region-btn" id="region-btn" onclick="toggleRegionMenu()">
+        <span id="region-label">전체 지역</span>
+        <span class="arrow">▼</span>
+      </button>
+      <div class="region-menu" id="region-menu">
+        <a href="#" class="active" onclick="setRegion('all',this,'전체 지역');return false;">전체 지역</a>
+        <a href="#" onclick="setRegion('아프리카',this,'아프리카');return false;">아프리카</a>
+        <a href="#" onclick="setRegion('동남아시아',this,'동남아시아');return false;">동남아시아</a>
+        <a href="#" onclick="setRegion('동유럽',this,'동유럽');return false;">동유럽</a>
+        <a href="#" onclick="setRegion('중동',this,'중동');return false;">중동</a>
+        <a href="#" onclick="setRegion('중앙아시아',this,'중앙아시아');return false;">중앙아시아</a>
+        <a href="#" onclick="setRegion('남아시아',this,'남아시아');return false;">남아시아</a>
+        <a href="#" onclick="setRegion('카리브해',this,'카리브해');return false;">카리브해</a>
+        <a href="#" onclick="setRegion('라틴아메리카',this,'라틴아메리카');return false;">라틴아메리카</a>
+        <a href="#" onclick="setRegion('오세아니아',this,'오세아니아');return false;">오세아니아</a>
+      </div>
+    </div>
+    <nav class="nav-sector">
+      <a href="#" class="active" onclick="setSector('all',this);return false;">전체</a>
+      <a href="#" onclick="setSector('경제',this);return false;" data-sector>경제</a>
+      <a href="#" onclick="setSector('금융/증권',this);return false;" data-sector>금융/증권</a>
+      <a href="#" onclick="setSector('자원/에너지',this);return false;" data-sector>자원/에너지</a>
+      <a href="#" onclick="setSector('산업/기업',this);return false;" data-sector>산업/기업</a>
+      <a href="#" onclick="setSector('정치',this);return false;" data-sector>정치</a>
+      <a href="#" onclick="setSector('사회',this);return false;" data-sector>사회</a>
+      <a href="#" onclick="setSector('IT·과학',this);return false;" data-sector>IT·과학</a>
+      <a href="#" onclick="setSector('글로벌경제',this);return false;" data-sector>글로벌경제</a>
+    </nav>
+    <a class="nav-issue" id="nav-issue" onclick="setIssueMode(this);return false;">🔥 이슈</a>
+  </div>
 
 <div class="container">
   <main>
@@ -348,7 +450,10 @@
   let currentRegion = 'all';
   let currentSector = 'all';
   let currentArticles = [];
+  let currentQuery = '';
+  let currentIssue = null;
   let issueMap = {};
+  let expandedIdx = null;
 
   // 지역/분야 필터 — DB 컬럼과 정확히 매핑
   const REGION_MAP = {
@@ -391,34 +496,149 @@
   }
 
   function getFiltered() {
-    return allArticles.filter(a => matchRegion(a, currentRegion) && matchSector(a, currentSector));
+    let results = allArticles.filter(a => matchRegion(a, currentRegion) && matchSector(a, currentSector));
+    if (currentQuery) {
+      const q = currentQuery.toLowerCase();
+      results = results.filter(a =>
+        (a.title_ko||'').toLowerCase().includes(q) ||
+        (a.title_en||'').toLowerCase().includes(q) ||
+        (a.summary_ko||'').toLowerCase().includes(q) ||
+        (a.country||'').toLowerCase().includes(q) ||
+        (a.source||'').toLowerCase().includes(q)
+      );
+    }
+    return results;
   }
 
-  function setRegion(region, el) {
-    document.querySelectorAll('.nav-region a').forEach(a => a.classList.remove('active'));
-    el.classList.add('active');
-    currentRegion = region;
-    currentIssue = null;
+  // 검색
+  function onSearch(val) {
+    currentQuery = val.trim();
+    const clearBtn = document.getElementById('search-clear');
+    const info = document.getElementById('search-info');
+    clearBtn.style.display = currentQuery ? 'inline-block' : 'none';
+    const filtered = getFiltered();
+    info.textContent = currentQuery ? `${filtered.length}건` : '';
+    document.getElementById('feed-title').textContent = currentQuery ? `🔍 ${currentQuery}` : '● LIVE FEED';
+    renderArticles(filtered);
+  }
+
+  function clearSearch() {
+    document.getElementById('search-input').value = '';
+    currentQuery = '';
+    document.getElementById('search-clear').style.display = 'none';
+    document.getElementById('search-info').textContent = '';
     document.getElementById('feed-title').textContent = '● LIVE FEED';
+    renderArticles(getFiltered());
+  }
+
+  // 드롭다운
+  function toggleRegionMenu() {
+    const menu = document.getElementById('region-menu');
+    const btn = document.getElementById('region-btn');
+    const isOpen = menu.classList.contains('open');
+    menu.classList.toggle('open', !isOpen);
+    btn.classList.toggle('open', !isOpen);
+  }
+  document.addEventListener('click', e => {
+    if (!document.getElementById('region-dropdown').contains(e.target)) {
+      document.getElementById('region-menu').classList.remove('open');
+      document.getElementById('region-btn').classList.remove('open');
+    }
+  });
+
+  // 인라인 확장
+  function closeExpand() {
+    document.querySelectorAll('.article-expand').forEach(el => el.remove());
+    document.querySelectorAll('.article-card.expanded').forEach(el => el.classList.remove('expanded'));
+    expandedIdx = null;
+  }
+
+  function toggleExpand(idx) {
+    const card = document.querySelector(`.article-card[data-idx="${idx}"]`);
+    if (!card) return;
+    if (expandedIdx === idx) { closeExpand(); return; }
+    closeExpand();
+    expandedIdx = idx;
+    const a = allArticles[idx];
+    card.classList.add('expanded');
+    const isOwn = a.source === 'The Wise Frontier';
+    const panel = document.createElement('div');
+    panel.className = 'article-expand open';
+    panel.innerHTML = `
+      <div class="expand-meta">
+        <span>🕐 ${formatTime(a.created_at)}</span>
+        <span>${isOwn ? '✦ The Wise Frontier' : '📎 ' + a.source}</span>
+        ${a.region ? `<span>🌍 ${a.region}</span>` : ''}
+      </div>
+      <div class="expand-summary">${a.summary_ko || a.summary_en || '요약 정보가 없습니다.'}</div>
+      <div class="expand-footer">
+        ${!isOwn ? `<a class="expand-link" href="${a.url}" target="_blank">원문 보기 →</a>` : '<span></span>'}
+        <button class="expand-close" onclick="closeExpand()">닫기</button>
+      </div>`;
+    card.after(panel);
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  // 탭 active 초기화
+  function clearAllActive() {
+    document.querySelectorAll('.nav-sector a').forEach(a => a.classList.remove('active'));
+    document.querySelectorAll('.region-menu a').forEach(a => a.classList.remove('active'));
+    document.getElementById('nav-issue').classList.remove('active');
+  }
+
+  function setRegion(region, el, label) {
+    clearAllActive();
+    if (el) el.classList.add('active');
+    document.getElementById('region-label').textContent = label || '전체 지역';
+    document.getElementById('region-btn').classList.toggle('active', region !== 'all');
+    document.getElementById('region-menu').classList.remove('open');
+    document.getElementById('region-btn').classList.remove('open');
+    currentRegion = region;
+    currentSector = 'all';
+    currentIssue = null;
+    closeExpand();
+    document.getElementById('feed-title').textContent = region === 'all' ? '● LIVE FEED' : `● ${label}`;
     renderArticles(getFiltered());
   }
 
   function setSector(sector, el) {
-    document.querySelectorAll('.nav-sector a').forEach(a => a.classList.remove('active'));
-    el.classList.add('active');
+    clearAllActive();
+    if (el) el.classList.add('active');
     currentSector = sector;
+    currentRegion = 'all';
     currentIssue = null;
-    document.getElementById('feed-title').textContent = '● LIVE FEED';
+    closeExpand();
+    document.getElementById('region-label').textContent = '전체 지역';
+    document.getElementById('region-btn').classList.remove('active');
+    document.getElementById('feed-title').textContent = sector === 'all' ? '● LIVE FEED' : `● ${sector}`;
     renderArticles(getFiltered());
   }
 
   function setIssueMode(el) {
-    document.querySelectorAll('.nav-region a').forEach(a => a.classList.remove('active'));
-    el.classList.add('active');
+    clearAllActive();
+    if (el) el.classList.add('active');
     currentIssue = 'all';
+    closeExpand();
     document.getElementById('feed-title').textContent = '🔥 주요 이슈';
-    // 이슈 목록을 메인 피드에 표시
     renderIssueList();
+  }
+
+  function filterByTag(type, value, event) {
+    if (event) event.stopPropagation();
+    closeExpand();
+    if (type === 'sector') {
+      const el = [...document.querySelectorAll('.nav-sector a[data-sector]')].find(a => a.textContent.trim() === value);
+      setSector(value, el);
+    } else if (type === 'country') {
+      currentQuery = value;
+      document.getElementById('search-input').value = value;
+      document.getElementById('search-clear').style.display = 'inline-block';
+      currentRegion = 'all'; currentSector = 'all';
+      const filtered = getFiltered();
+      document.getElementById('search-info').textContent = `${filtered.length}건`;
+      document.getElementById('feed-title').textContent = `🔍 ${value}`;
+      renderArticles(filtered);
+    }
   }
 
   function renderIssueList() {
