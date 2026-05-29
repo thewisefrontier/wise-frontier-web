@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-05-29 04:33 UTC",
+  "updated_at": "2026-05-29 05:03 UTC",
   "indices": [
     {
       "name": "JSE",
@@ -18,14 +18,14 @@
     {
       "name": "SET",
       "symbol": "^SET.BK",
-      "price": 1578.3,
-      "change_pct": 0.59,
+      "price": 1578.54,
+      "change_pct": 0.61,
       "up": true
     },
     {
       "name": "IDX",
       "symbol": "^JKSE",
-      "price": 6217.64,
+      "price": 6217.88,
       "change_pct": 1.43,
       "up": true
     },
@@ -53,8 +53,8 @@
     {
       "name": "USD/ZAR",
       "symbol": "USDZAR=X",
-      "price": 16.23,
-      "change_pct": -0.85,
+      "price": 16.21,
+      "change_pct": -0.98,
       "up": false
     }
   ]
