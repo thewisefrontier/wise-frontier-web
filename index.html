@@ -635,10 +635,10 @@
     currentIssue = 'all';
     closeExpand();
     document.getElementById('feed-title').textContent = '🔥 주요 이슈';
-    // 자체 기사 중 이슈 기사만 (cluster_ 타입)
-    const issueArticles = allArticles.filter(a =>
-      a.source === 'The Wise Frontier' && (a.subcategory || '').startsWith('cluster_')
-    );
+    // 클러스터 기사만 score(기사 수) 내림차순으로 표시
+    const issueArticles = allArticles
+      .filter(a => a.source === 'The Wise Frontier' && (a.subcategory || '').startsWith('cluster_'))
+      .sort((a, b) => (b.score || 0) - (a.score || 0));
     if (issueArticles.length) {
       renderArticles(issueArticles);
     } else {
