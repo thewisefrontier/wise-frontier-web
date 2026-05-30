@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TWF Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --bg2: #161616;
+      --bg3: #1e1e1e;
+      --border: #2a2a2a;
+      --text: #e8e0d0;
+      --muted: #666;
+      --accent: #c8a060;
+      --accent2: #6090c8;
+      --danger: #c85050;
+      --success: #50c878;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--bg); color: var(--text); font-family: 'IBM Plex Mono', monospace; min-height: 100vh; }
+
+    /* 로그인 */
+    #login-screen {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; flex-direction: column; gap: 24px;
+    }
+    .login-box {
+      background: var(--bg2); border: 1px solid var(--border);
+      padding: 40px; width: 400px;
+    }
+    .login-title { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--accent); margin-bottom: 24px; }
+    .login-box input {
+      width: 100%; padding: 10px 14px; background: var(--bg3);
+      border: 1px solid var(--border); color: var(--text);
+      font-family: 'IBM Plex Mono', monospace; font-size: 13px;
+      margin-bottom: 12px; outline: none;
+    }
+    .login-box input:focus { border-color: var(--accent); }
+    .btn {
+      padding: 10px 20px; font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px; font-weight: 700; cursor: pointer;
+      border: none; transition: all 0.2s; letter-spacing: 0.05em;
+    }
+    .btn-primary { background: var(--accent); color: #000; }
+    .btn-primary:hover { background: #e0b870; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-danger:hover { background: #e06060; }
+    .btn-secondary { background: var(--bg3); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-success { background: var(--success); color: #000; }
+    .btn-full { width: 100%; }
+
+    /* 메인 레이아웃 */
+    #app { display: none; }
+    .header {
+      background: var(--bg2); border-bottom: 2px solid var(--accent);
+      padding: 14px 24px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .header-title { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--accent); }
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+
+    .container { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 53px); }
+
+    /* 사이드바 */
+    .sidebar { background: var(--bg2); border-right: 1px solid var(--border); padding: 20px 0; }
+    .sidebar-item {
+      padding: 10px 20px; font-size: 12px; color: var(--muted);
+      cursor: pointer; border-left: 3px solid transparent;
+      transition: all 0.2s; display: flex; align-items: center; gap: 8px;
+    }
+    .sidebar-item:hover { color: var(--text); background: var(--bg3); }
+    .sidebar-item.active { color: var(--accent); border-left-color: var(--accent); background: var(--bg3); }
+    .sidebar-count {
+      margin-left: auto; background: var(--bg); padding: 2px 6px;
+      font-size: 10px; color: var(--muted);
+    }
+
+    /* 메인 콘텐츠 */
+    .main { padding: 24px; overflow-y: auto; }
+
+    /* 검색/필터 바 */
+    .toolbar {
+      display: flex; gap: 8px; margin-bottom: 20px; align-items: center; flex-wrap: wrap;
+    }
+    .toolbar input, .toolbar select {
+      padding: 8px 12px; background: var(--bg2); border: 1px solid var(--border);
+      color: var(--text); font-family: 'IBM Plex Mono', monospace; font-size: 12px; outline: none;
+    }
+    .toolbar input:focus, .toolbar select:focus { border-color: var(--accent); }
+    .toolbar input { flex: 1; min-width: 200px; }
+
+    /* 기사 테이블 */
+    .article-table { width: 100%; border-collapse: collapse; }
+    .article-table th {
+      text-align: left; padding: 10px 12px; font-size: 11px; color: var(--muted);
+      border-bottom: 1px solid var(--border); white-space: nowrap;
+    }
+    .article-table td {
+      padding: 10px 12px; font-size: 12px; border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .article-table tr:hover td { background: var(--bg3); }
+    .article-title-cell { max-width: 400px; }
+    .article-title-text {
+      color: var(--text); cursor: pointer; display: block;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 380px;
+    }
+    .article-title-text:hover { color: var(--accent); }
+    .tag {
+      display: inline-block; padding: 2px 6px; font-size: 10px;
+      background: var(--bg3); border: 1px solid var(--border); margin-right: 4px;
+    }
+    .tag-own { border-color: var(--accent); color: var(--accent); }
+    .tag-time { color: var(--muted); font-size: 11px; white-space: nowrap; }
+    .actions { display: flex; gap: 6px; white-space: nowrap; }
+
+    /* 편집 패널 */
+    .edit-panel {
+      display: none; position: fixed; top: 0; right: 0; width: 600px;
+      height: 100vh; background: var(--bg2); border-left: 1px solid var(--border);
+      z-index: 100; flex-direction: column;
+    }
+    .edit-panel.open { display: flex; }
+    .edit-header {
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .edit-title { font-size: 14px; font-weight: 700; color: var(--accent); }
+    .edit-body { padding: 20px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
+    .field-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+    .field-input {
+      width: 100%; padding: 8px 12px; background: var(--bg3); border: 1px solid var(--border);
+      color: var(--text); font-family: 'IBM Plex Mono', monospace; font-size: 12px; outline: none;
+    }
+    .field-input:focus { border-color: var(--accent); }
+    .field-textarea {
+      width: 100%; padding: 10px 12px; background: var(--bg3); border: 1px solid var(--border);
+      color: var(--text); font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+      outline: none; resize: vertical; min-height: 200px; line-height: 1.7;
+    }
+    .field-textarea:focus { border-color: var(--accent); }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .edit-footer {
+      padding: 16px 20px; border-top: 1px solid var(--border);
+      display: flex; gap: 8px; justify-content: flex-end;
+    }
+
+    /* 새 기사 작성 패널 */
+    .overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 99;
+    }
+    .overlay.open { display: block; }
+
+    /* 상태 메시지 */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px; padding: 12px 20px;
+      background: var(--bg2); border: 1px solid var(--border);
+      font-size: 12px; z-index: 200; display: none;
+      animation: fadeIn 0.2s ease;
+    }
+    .toast.show { display: block; }
+    .toast.success { border-color: var(--success); color: var(--success); }
+    .toast.error { border-color: var(--danger); color: var(--danger); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; } }
+
+    /* 페이지네이션 */
+    .pagination { display: flex; gap: 4px; margin-top: 16px; justify-content: center; }
+    .page-btn {
+      padding: 6px 12px; background: var(--bg2); border: 1px solid var(--border);
+      color: var(--muted); cursor: pointer; font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    }
+    .page-btn:hover, .page-btn.active { border-color: var(--accent); color: var(--accent); }
+
+    .empty { text-align: center; padding: 60px; color: var(--muted); font-size: 13px; }
+    .loading { text-align: center; padding: 40px; color: var(--muted); }
+  </style>
+</head>
+<body>
+
+<!-- 로그인 화면 -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-title">TWF Admin</div>
+    <input type="text" id="login-url" placeholder="Supabase URL (https://xxx.supabase.co)" />
+    <input type="password" id="login-key" placeholder="Service Role Key" />
+    <button class="btn btn-primary btn-full" onclick="login()">로그인</button>
+  </div>
+</div>
+
+<!-- 메인 앱 -->
+<div id="app">
+  <div class="overlay" id="overlay" onclick="closeEdit()"></div>
+
+  <div class="header">
+    <div class="header-title">✦ TWF Admin</div>
+    <div class="header-actions">
+      <span id="article-count" style="font-size:11px;color:var(--muted);"></span>
+      <button class="btn btn-primary" onclick="openNew()">+ 새 기사</button>
+      <button class="btn btn-secondary" onclick="logout()">로그아웃</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- 사이드바 -->
+    <div class="sidebar">
+      <div class="sidebar-item active" onclick="setFilter('all',this)">📰 전체 기사</div>
+      <div class="sidebar-item" onclick="setFilter('own',this)">✦ TWF 자체 기사</div>
+      <div class="sidebar-item" onclick="setFilter('rss',this)">📡 RSS 기사</div>
+      <div class="sidebar-item" onclick="setFilter('cluster',this)">🔥 이슈 클러스터</div>
+      <div style="height:1px;background:var(--border);margin:12px 0;"></div>
+      <div class="sidebar-item" onclick="setFilter('briefing',this)">📋 브리핑</div>
+    </div>
+
+    <!-- 메인 -->
+    <div class="main">
+      <div class="toolbar">
+        <input type="text" id="search-input" placeholder="🔍 제목, 국가, 출처 검색..." oninput="onSearch()" />
+        <select id="filter-region" onchange="loadArticles()">
+          <option value="">전체 지역</option>
+          <option value="africa">아프리카</option>
+          <option value="southeast_asia">동남아시아</option>
+          <option value="eastern_europe">동유럽</option>
+          <option value="middle_east">중동</option>
+          <option value="central_asia">중앙아시아</option>
+        </select>
+        <select id="filter-category" onchange="loadArticles()">
+          <option value="">전체 분야</option>
+          <option value="경제">경제</option>
+          <option value="금융/증권">금융/증권</option>
+          <option value="자원/에너지">자원/에너지</option>
+          <option value="산업/기업">산업/기업</option>
+          <option value="정치">정치</option>
+          <option value="사회">사회</option>
+        </select>
+      </div>
+
+      <div id="article-list">
+        <div class="loading">로딩 중...</div>
+      </div>
+
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </div>
+
+  <!-- 편집 패널 -->
+  <div class="edit-panel" id="edit-panel">
+    <div class="edit-header">
+      <div class="edit-title" id="edit-panel-title">기사 편집</div>
+      <button class="btn btn-secondary" onclick="closeEdit()">✕ 닫기</button>
+    </div>
+    <div class="edit-body">
+      <input type="hidden" id="edit-id" />
+      <div>
+        <div class="field-label">제목 (한국어)</div>
+        <input class="field-input" id="edit-title-ko" type="text" placeholder="기사 제목" />
+      </div>
+      <div>
+        <div class="field-label">본문 / 요약 (한국어)</div>
+        <textarea class="field-textarea" id="edit-summary-ko" placeholder="기사 본문을 입력하세요..."></textarea>
+      </div>
+      <div class="field-row">
+        <div>
+          <div class="field-label">카테고리</div>
+          <select class="field-input" id="edit-category">
+            <option value="">선택</option>
+            <option value="경제">경제</option>
+            <option value="금융/증권">금융/증권</option>
+            <option value="자원/에너지">자원/에너지</option>
+            <option value="산업/기업">산업/기업</option>
+            <option value="정치">정치</option>
+            <option value="사회">사회</option>
+            <option value="IT·과학">IT·과학</option>
+            <option value="글로벌경제">글로벌경제</option>
+            <option value="브리핑">브리핑</option>
+            <option value="종합">종합</option>
+          </select>
+        </div>
+        <div>
+          <div class="field-label">지역</div>
+          <select class="field-input" id="edit-region">
+            <option value="">선택</option>
+            <option value="africa">아프리카</option>
+            <option value="southeast_asia">동남아시아</option>
+            <option value="eastern_europe">동유럽</option>
+            <option value="middle_east">중동</option>
+            <option value="central_asia">중앙아시아</option>
+            <option value="south_asia">남아시아</option>
+            <option value="latin_america">라틴아메리카</option>
+            <option value="caribbean">카리브해</option>
+            <option value="oceania">오세아니아</option>
+            <option value="global">글로벌</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div>
+          <div class="field-label">국가</div>
+          <input class="field-input" id="edit-country" type="text" placeholder="예: 나이지리아" />
+        </div>
+        <div>
+          <div class="field-label">출처</div>
+          <input class="field-input" id="edit-source" type="text" placeholder="예: The Wise Frontier" />
+        </div>
+      </div>
+      <div>
+        <div class="field-label">원문 URL</div>
+        <input class="field-input" id="edit-url" type="text" placeholder="https://..." />
+      </div>
+    </div>
+    <div class="edit-footer">
+      <button class="btn btn-danger" id="delete-btn" onclick="deleteArticle()">삭제</button>
+      <button class="btn btn-secondary" onclick="closeEdit()">취소</button>
+      <button class="btn btn-primary" onclick="saveArticle()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 토스트 -->
+<div class="toast" id="toast"></div>
+
+<script>
+  let SUPABASE_URL = '';
+  let SUPABASE_KEY = '';
+  let currentFilter = 'all';
+  let currentPage = 0;
+  let pageSize = 30;
+  let searchQuery = '';
+  let searchTimer = null;
+  let isNew = false;
+
+  // ── 인증 ─────────────────────────────────────────────
+
+  function login() {
+    const url = document.getElementById('login-url').value.trim().replace(/\/$/, '');
+    const key = document.getElementById('login-key').value.trim();
+    if (!url || !key) { toast('URL과 Key를 입력하세요', 'error'); return; }
+    SUPABASE_URL = url;
+    SUPABASE_KEY = key;
+    sessionStorage.setItem('twf_url', url);
+    sessionStorage.setItem('twf_key', key);
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadArticles();
+  }
+
+  function logout() {
+    sessionStorage.clear();
+    location.reload();
+  }
+
+  // 자동 로그인
+  window.onload = () => {
+    const url = sessionStorage.getItem('twf_url');
+    const key = sessionStorage.getItem('twf_key');
+    if (url && key) {
+      SUPABASE_URL = url;
+      SUPABASE_KEY = key;
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      loadArticles();
+    }
+  };
+
+  // ── API 헬퍼 ─────────────────────────────────────────
+
+  function headers(extra = {}) {
+    return {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation',
+      ...extra
+    };
+  }
+
+  async function apiGet(params = {}) {
+    const qs = new URLSearchParams(params).toString();
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/articles?${qs}`, {
+      headers: headers({'Range': `${currentPage * pageSize}-${(currentPage + 1) * pageSize - 1}`})
+    });
+    if (!res.ok) throw new Error(`${res.status}`);
+    const total = res.headers.get('content-range')?.split('/')[1];
+    return { data: await res.json(), total: parseInt(total) || 0 };
+  }
+
+  async function apiPatch(id, payload) {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/articles?id=eq.${id}`, {
+      method: 'PATCH', headers: headers(), body: JSON.stringify(payload)
+    });
+    return res.ok;
+  }
+
+  async function apiPost(payload) {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/articles`, {
+      method: 'POST',
+      headers: headers({'Prefer': 'resolution=ignore-duplicates,return=representation'}),
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error(await res.text());
+    return await res.json();
+  }
+
+  async function apiDelete(id) {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/articles?id=eq.${id}`, {
+      method: 'DELETE', headers: headers()
+    });
+    return res.ok;
+  }
+
+  // ── 기사 목록 ─────────────────────────────────────────
+
+  function setFilter(filter, el) {
+    currentFilter = filter;
+    currentPage = 0;
+    document.querySelectorAll('.sidebar-item').forEach(e => e.classList.remove('active'));
+    el.classList.add('active');
+    loadArticles();
+  }
+
+  function onSearch() {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      searchQuery = document.getElementById('search-input').value.trim();
+      currentPage = 0;
+      loadArticles();
+    }, 300);
+  }
+
+  async function loadArticles() {
+    document.getElementById('article-list').innerHTML = '<div class="loading">로딩 중...</div>';
+    const params = {
+      select: 'id,title_ko,title_en,source,category,country,region,created_at,subcategory,sent_telegram',
+      order: 'created_at.desc',
+    };
+
+    // 필터
+    if (currentFilter === 'own') params['source'] = 'eq.The Wise Frontier';
+    else if (currentFilter === 'rss') params['source'] = 'neq.The Wise Frontier';
+    else if (currentFilter === 'cluster') { params['source'] = 'eq.The Wise Frontier'; params['subcategory'] = 'like.cluster_%'; }
+    else if (currentFilter === 'briefing') { params['source'] = 'eq.The Wise Frontier'; params['subcategory'] = 'like.%briefing%'; }
+
+    const region = document.getElementById('filter-region').value;
+    const category = document.getElementById('filter-category').value;
+    if (region) params['region'] = `eq.${region}`;
+    if (category) params['category'] = `eq.${category}`;
+
+    if (searchQuery) {
+      params['or'] = `(title_ko.ilike.*${searchQuery}*,title_en.ilike.*${searchQuery}*,country.ilike.*${searchQuery}*,source.ilike.*${searchQuery}*)`;
+    }
+
+    try {
+      const { data, total } = await apiGet(params);
+      document.getElementById('article-count').textContent = `총 ${total}건`;
+      renderArticles(data, total);
+    } catch(e) {
+      document.getElementById('article-list').innerHTML = `<div class="empty">오류: ${e.message}</div>`;
+    }
+  }
+
+  function renderArticles(articles, total) {
+    if (!articles.length) {
+      document.getElementById('article-list').innerHTML = '<div class="empty">기사 없음</div>';
+      document.getElementById('pagination').innerHTML = '';
+      return;
+    }
+
+    const html = `
+      <table class="article-table">
+        <thead>
+          <tr>
+            <th>제목</th>
+            <th>출처</th>
+            <th>분야</th>
+            <th>국가</th>
+            <th>날짜</th>
+            <th>관리</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${articles.map(a => {
+            const isOwn = a.source === 'The Wise Frontier';
+            const title = a.title_ko || a.title_en || '(제목없음)';
+            const date = (a.created_at || '').slice(0, 10);
+            return `
+              <tr>
+                <td class="article-title-cell">
+                  ${isOwn ? '<span class="tag tag-own">✦ TWF</span>' : ''}
+                  <span class="article-title-text" onclick="openEdit(${a.id})" title="${title}">${title}</span>
+                </td>
+                <td><span style="color:var(--muted);font-size:11px;">${a.source || ''}</span></td>
+                <td><span class="tag">${a.category || ''}</span></td>
+                <td><span style="font-size:11px;">${a.country || ''}</span></td>
+                <td class="tag-time">${date}</td>
+                <td class="actions">
+                  <button class="btn btn-secondary" style="padding:4px 10px;font-size:10px;" onclick="openEdit(${a.id})">편집</button>
+                  <button class="btn btn-danger" style="padding:4px 10px;font-size:10px;" onclick="confirmDelete(${a.id})">삭제</button>
+                </td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    `;
+    document.getElementById('article-list').innerHTML = html;
+    renderPagination(total);
+  }
+
+  function renderPagination(total) {
+    const totalPages = Math.ceil(total / pageSize);
+    if (totalPages <= 1) { document.getElementById('pagination').innerHTML = ''; return; }
+    let html = '';
+    const start = Math.max(0, currentPage - 2);
+    const end = Math.min(totalPages - 1, currentPage + 2);
+    if (start > 0) html += `<button class="page-btn" onclick="goPage(0)">1</button><span style="color:var(--muted);padding:0 4px;">...</span>`;
+    for (let i = start; i <= end; i++) {
+      html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${i + 1}</button>`;
+    }
+    if (end < totalPages - 1) html += `<span style="color:var(--muted);padding:0 4px;">...</span><button class="page-btn" onclick="goPage(${totalPages-1})">${totalPages}</button>`;
+    document.getElementById('pagination').innerHTML = html;
+  }
+
+  function goPage(page) {
+    currentPage = page;
+    loadArticles();
+    window.scrollTo(0, 0);
+  }
+
+  // ── 편집 ─────────────────────────────────────────────
+
+  async function openEdit(id) {
+    isNew = false;
+    document.getElementById('edit-panel-title').textContent = '기사 편집';
+    document.getElementById('delete-btn').style.display = 'block';
+
+    // 상세 조회
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/articles?id=eq.${id}&select=*`, { headers: headers() });
+    const data = await res.json();
+    if (!data.length) return;
+    const a = data[0];
+
+    document.getElementById('edit-id').value = a.id;
+    document.getElementById('edit-title-ko').value = a.title_ko || '';
+    document.getElementById('edit-summary-ko').value = a.summary_ko || '';
+    document.getElementById('edit-category').value = a.category || '';
+    document.getElementById('edit-region').value = a.region || '';
+    document.getElementById('edit-country').value = a.country || '';
+    document.getElementById('edit-source').value = a.source || '';
+    document.getElementById('edit-url').value = a.url || '';
+
+    document.getElementById('edit-panel').classList.add('open');
+    document.getElementById('overlay').classList.add('open');
+  }
+
+  function openNew() {
+    isNew = true;
+    document.getElementById('edit-panel-title').textContent = '새 기사 작성';
+    document.getElementById('delete-btn').style.display = 'none';
+    document.getElementById('edit-id').value = '';
+    document.getElementById('edit-title-ko').value = '';
+    document.getElementById('edit-summary-ko').value = '';
+    document.getElementById('edit-category').value = '';
+    document.getElementById('edit-region').value = '';
+    document.getElementById('edit-country').value = '';
+    document.getElementById('edit-source').value = 'The Wise Frontier';
+    document.getElementById('edit-url').value = '';
+    document.getElementById('edit-panel').classList.add('open');
+    document.getElementById('overlay').classList.add('open');
+  }
+
+  function closeEdit() {
+    document.getElementById('edit-panel').classList.remove('open');
+    document.getElementById('overlay').classList.remove('open');
+  }
+
+  async function saveArticle() {
+    const id = document.getElementById('edit-id').value;
+    const payload = {
+      title_ko: document.getElementById('edit-title-ko').value,
+      title_en: document.getElementById('edit-title-ko').value,
+      summary_ko: document.getElementById('edit-summary-ko').value,
+      category: document.getElementById('edit-category').value,
+      region: document.getElementById('edit-region').value,
+      country: document.getElementById('edit-country').value,
+      source: document.getElementById('edit-source').value,
+      url: document.getElementById('edit-url').value,
+    };
+
+    try {
+      if (isNew) {
+        if (!payload.url) payload.url = `internal://manual/${Date.now()}`;
+        payload.sent_telegram = 1;
+        payload.posted_blog = 0;
+        payload.score = 100;
+        payload.created_at = new Date().toISOString().slice(0, 16).replace('T', ' ');
+        await apiPost(payload);
+        toast('기사가 등록됐습니다', 'success');
+      } else {
+        await apiPatch(id, payload);
+        toast('저장됐습니다', 'success');
+      }
+      closeEdit();
+      loadArticles();
+    } catch(e) {
+      toast(`오류: ${e.message}`, 'error');
+    }
+  }
+
+  async function confirmDelete(id) {
+    if (!confirm('이 기사를 삭제하시겠습니까?')) return;
+    const ok = await apiDelete(id);
+    if (ok) { toast('삭제됐습니다', 'success'); loadArticles(); }
+    else toast('삭제 실패', 'error');
+  }
+
+  async function deleteArticle() {
+    const id = document.getElementById('edit-id').value;
+    if (!id) return;
+    if (!confirm('이 기사를 삭제하시겠습니까?')) return;
+    const ok = await apiDelete(id);
+    if (ok) { toast('삭제됐습니다', 'success'); closeEdit(); loadArticles(); }
+    else toast('삭제 실패', 'error');
+  }
+
+  // ── 토스트 ────────────────────────────────────────────
+
+  function toast(msg, type = 'success') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = `toast show ${type}`;
+    setTimeout(() => el.classList.remove('show'), 3000);
+  }
+</script>
+</body>
+</html>
