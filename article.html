@@ -112,9 +112,13 @@
   <a href="/" class="site-logo">News<span>Final</span></a>
   <div class="site-nav">
     <a href="/">홈</a> ·
-    <a href="/?tab=own">TWF 기사</a> ·
-    <a href="/?tab=issue">이슈</a> ·
-    <a href="https://t.me/NewsFinal" target="_blank">텔레그램</a>
+    <a href="/?category=경제">경제</a> ·
+    <a href="/?category=금융">금융</a> ·
+    <a href="/?category=자원·에너지">자원·에너지</a> ·
+    <a href="/?category=산업·기업">산업·기업</a> ·
+    <a href="/?category=정치·외교">정치·외교</a> ·
+    <a href="/?category=사회">사회</a> ·
+    <a href="/?category=IT·과학">IT·과학</a>
   </div>
 </header>
 
@@ -123,10 +127,20 @@
 </div>
 
 <footer class="site-footer">
-  THE WISE FRONTIER © 2026
+  NEWSFINAL © 2026
 </footer>
 
 <script>
+  const REGION_KO = {
+    'africa': '아프리카', 'southeast_asia': '동남아시아',
+    'eastern_europe': '동유럽', 'middle_east': '중동',
+    'central_asia': '중앙아시아', 'south_asia': '남아시아',
+    'latin_america': '라틴아메리카', 'caribbean': '카리브해',
+    'oceania': '오세아니아', 'global': '글로벌',
+    'east_africa': '동아프리카', 'west_africa': '서아프리카',
+    'north_africa': '북아프리카', 'southern_africa': '남아프리카',
+  };
+  function regionKo(r) { return REGION_KO[r] || r || ''; }
   async function loadArticle() {
     const params = new URLSearchParams(location.search);
     const id = params.get('id');
@@ -186,22 +200,15 @@
 
       <div class="article-meta">
         <span>🕐 ${formatDate(a.created_at)}</span>
-        <span>📎 ${a.source || ''}</span>
-        ${a.region ? `<span>🌍 ${a.region}</span>` : ''}
+        ${a.region ? `<span>🌍 ${regionKo(a.region)}</span>` : ''}
+        ${a.country ? `<span>📍 ${a.country}</span>` : ''}
       </div>
 
       <div class="article-body">
         <p>${bodyHtml}</p>
       </div>
 
-      ${!isOwn && a.url && !a.url.startsWith('internal://') ? `
-        <div class="source-link">
-          출처: <a href="${a.url}" target="_blank" rel="noopener">${a.source}</a> →
-          <a href="${a.url}" target="_blank" rel="noopener">원문 보기</a>
-        </div>
-      ` : ''}
-
-      ${isOwn ? `<div class="source-link">ⓒ NewsFinal</div>` : ''}
+      <div class="source-link">ⓒ NewsFinal</div>
 
       ${related.length ? `
         <div class="related">

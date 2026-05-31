@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NewsFinal — 프론티어 마켓 전문 미디어</title>
+  <title>NewsFinal — 프론티어 미디어</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet" />
   <style>
@@ -269,7 +269,7 @@
   <div class="header-main">
     <a href="/" class="logo">News<span>Final</span></a>
     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
-      <div class="header-meta">프론티어 마켓 전문 미디어</div>
+      <div class="header-meta">프론티어 미디어</div>
       <div style="display:flex;align-items:center;gap:6px;">
         <input class="search-input" id="search-input" type="text" placeholder="🔍 기사 검색..." autocomplete="off" oninput="onSearch(this.value)" onkeydown="if(event.key==='Escape'){clearSearch();}" />
         <button class="search-clear" id="search-clear" onclick="clearSearch()">✕</button>
@@ -299,16 +299,14 @@
       </div>
     </div>
     <nav class="nav-sector">
-      
       <a href="#" class="active" onclick="setSector('all',this);return false;">전체</a>
       <a href="#" onclick="setSector('경제',this);return false;" data-sector>경제</a>
-      <a href="#" onclick="setSector('금융/증권',this);return false;" data-sector>금융/증권</a>
-      <a href="#" onclick="setSector('자원/에너지',this);return false;" data-sector>자원/에너지</a>
-      <a href="#" onclick="setSector('산업/기업',this);return false;" data-sector>산업/기업</a>
-      <a href="#" onclick="setSector('정치',this);return false;" data-sector>정치</a>
+      <a href="#" onclick="setSector('금융',this);return false;" data-sector>금융</a>
+      <a href="#" onclick="setSector('자원·에너지',this);return false;" data-sector>자원·에너지</a>
+      <a href="#" onclick="setSector('산업·기업',this);return false;" data-sector>산업·기업</a>
+      <a href="#" onclick="setSector('정치·외교',this);return false;" data-sector>정치·외교</a>
       <a href="#" onclick="setSector('사회',this);return false;" data-sector>사회</a>
       <a href="#" onclick="setSector('IT·과학',this);return false;" data-sector>IT·과학</a>
-      <a href="#" onclick="setSector('글로벌경제',this);return false;" data-sector>글로벌경제</a>
     </nav>
   </div>
 
