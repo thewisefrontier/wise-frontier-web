@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Wise Frontier — 프론티어 마켓 전문 미디어</title>
+  <title>NewsFinal — 프론티어 마켓 전문 미디어</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet" />
   <style>
@@ -267,7 +267,7 @@
   </div>
 
   <div class="header-main">
-    <a href="/" class="logo">The Wise <span>Frontier</span></a>
+    <a href="/" class="logo">News<span>Final</span></a>
     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
       <div class="header-meta">프론티어 마켓 전문 미디어</div>
       <div style="display:flex;align-items:center;gap:6px;">
@@ -299,7 +299,7 @@
       </div>
     </div>
     <nav class="nav-sector">
-      <a href="#" onclick="setOwn(this);return false;" data-own style="color:var(--accent);border-right:1px solid var(--border);">✦ TWF</a>
+      
       <a href="#" class="active" onclick="setSector('all',this);return false;">전체</a>
       <a href="#" onclick="setSector('경제',this);return false;" data-sector>경제</a>
       <a href="#" onclick="setSector('금융/증권',this);return false;" data-sector>금융/증권</a>
@@ -310,7 +310,6 @@
       <a href="#" onclick="setSector('IT·과학',this);return false;" data-sector>IT·과학</a>
       <a href="#" onclick="setSector('글로벌경제',this);return false;" data-sector>글로벌경제</a>
     </nav>
-    <a class="nav-issue" id="nav-issue" onclick="setIssueMode(this);return false;">🔥 이슈</a>
   </div>
 
 <div class="container">
@@ -344,8 +343,8 @@
 </div>
 
 <footer>
-  <div class="live-indicator"><div class="live-dot"></div><span>LIVE — 30분마다 업데이트</span></div>
-  <div>THE WISE FRONTIER © 2026</div>
+
+  <div>NEWSFINAL © 2026</div>
   <div><a href="https://t.me/TheWiseFrontier" style="color:var(--accent2);text-decoration:none;">텔레그램 채널 →</a></div>
 </footer>
 
@@ -555,36 +554,15 @@
   }
 
   function toggleExpand(idx) {
-    const card = document.querySelector(`.article-card[data-idx="${idx}"]`);
-    if (!card) return;
-    if (expandedIdx === idx) { closeExpand(); return; }
-    closeExpand();
-    expandedIdx = idx;
     const a = allArticles[idx];
-    card.classList.add('expanded');
-    const isOwn = a.source === 'The Wise Frontier';
-    const panel = document.createElement('div');
-    panel.className = 'article-expand open';
-    panel.innerHTML = `
-      <div class="expand-meta">
-        <span>🕐 ${formatTime(a.created_at)}</span>
-        <span>${isOwn ? '✦ The Wise Frontier' : '📎 ' + a.source}</span>
-        ${a.region ? `<span>🌍 ${a.region}</span>` : ''}
-      </div>
-      <div class="expand-summary">${(a.summary_ko || a.summary_en || '요약 정보가 없습니다.').replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>')}</div>
-      <div class="expand-footer">
-        ${!isOwn ? `<a class="expand-link" href="${a.url}" target="_blank">원문 보기 →</a>` : '<span style="font-family:\'IBM Plex Mono\',monospace;font-size:11px;color:var(--accent);font-weight:700;">ⓒ The Wise Frontier</span>'}
-        <button class="expand-close" onclick="closeExpand()">닫기</button>
-      </div>`;
-    card.after(panel);
-    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (!a) return;
+    location.href = `article.html?id=${a.id}`;
   }
 
   // 탭 active 초기화
   function clearAllActive() {
     document.querySelectorAll('.nav-sector a').forEach(a => a.classList.remove('active'));
     document.querySelectorAll('.region-menu a').forEach(a => a.classList.remove('active'));
-    document.getElementById('nav-issue').classList.remove('active');
   }
 
   function setRegion(region, el, label) {
@@ -625,7 +603,7 @@
     document.getElementById('region-label').textContent = '전체 지역';
     document.getElementById('region-btn').classList.remove('active');
     document.getElementById('feed-title').textContent = '✦ TWF 자체 기사';
-    const own = allArticles.filter(a => a.source === 'The Wise Frontier');
+    const own = allArticles.filter(a => a.source === 'NewsFinal');
     renderArticles(own);
   }
 
@@ -760,35 +738,44 @@
     container.innerHTML = html;
   }
 
+  const REGION_KO = {
+    'africa': '아프리카', 'southeast_asia': '동남아시아',
+    'eastern_europe': '동유럽', 'middle_east': '중동',
+    'central_asia': '중앙아시아', 'south_asia': '남아시아',
+    'latin_america': '라틴아메리카', 'caribbean': '카리브해',
+    'oceania': '오세아니아', 'global': '글로벌',
+    'east_africa': '동아프리카', 'west_africa': '서아프리카',
+    'north_africa': '북아프리카', 'southern_africa': '남아프리카',
+  };
+  function regionKo(r) { return REGION_KO[r] || r || ''; }
+
   function renderCard(a, standalone) {
-    const isOwn = a.source === 'The Wise Frontier';
     const idx = allArticles.indexOf(a);
     const catTag = a.category ? `<span class="tag" style="cursor:pointer;" onclick="filterByTag('sector','${a.category}',event)">${a.category}</span>` : '';
     const subTag = a.subcategory && a.subcategory !== a.category && !a.subcategory.startsWith('cluster_') && !a.subcategory.endsWith('briefing')
       ? `<span class="tag" style="cursor:pointer;" onclick="filterByTag('sector','${a.subcategory}',event)">${a.subcategory}</span>` : '';
+    const regionTag = a.region ? `<span class="tag">${regionKo(a.region)}</span>` : '';
     const countryTag = a.country ? `<span class="tag country" style="cursor:pointer;" onclick="filterByTag('country','${a.country}',event)">${a.country}</span>` : '';
 
     return `
-      <div class="article-card ${standalone?'standalone':''} ${isOwn?'own-article':''}" data-idx="${idx}" onclick="toggleExpand(${idx})">
+      <div class="article-card ${standalone?'standalone':''}" data-idx="${idx}" onclick="toggleExpand(${idx})">
         <div class="article-header">
           <div class="article-tags">
-            ${isOwn ? '<span class="own-badge">✦ TWF</span>' : ''}
-            ${catTag}${subTag}${countryTag}
+            ${catTag}${subTag}${regionTag}${countryTag}
           </div>
           <span class="article-time" data-created="${a.created_at}">${formatTime(a.created_at)}</span>
         </div>
         <div class="article-title">${a.title_ko||a.title_en}</div>
         ${a.summary_ko ? `<div class="article-summary">${a.summary_ko.slice(0,120)}${a.summary_ko.length>120?'…':''}</div>` : ''}
         <div class="article-footer">
-          <span class="article-source">${isOwn ? '✦ The Wise Frontier' : '📎 ' + a.source}</span>
-          ${!isOwn ? `<a class="article-link" href="${a.url}" target="_blank" onclick="event.stopPropagation()">원문 보기 →</a>` : ''}
+          <span class="article-source">ⓒ NewsFinal</span>
         </div>
       </div>`;
   }
 
   function renderWire(articles) {
     const container = document.getElementById('wire-container');
-    const rssOnly = articles.filter(a => a.source !== 'The Wise Frontier');
+    const rssOnly = articles.filter(a => a.source !== 'NewsFinal');
     if (!rssOnly.length) { container.innerHTML = '<div class="empty">준비 중</div>'; return; }
     container.innerHTML = rssOnly.slice(0,10).map((a,i) => `
       <div class="wire-item">
@@ -802,7 +789,7 @@
 
   function renderBriefing(articles) {
     const container = document.getElementById('briefing-container');
-    const ownOnly = articles.filter(a => a.source === 'The Wise Frontier');
+    const ownOnly = articles.filter(a => a.source === 'NewsFinal');
     const regions = {};
     ownOnly.forEach(a => {
       let r;
@@ -828,7 +815,7 @@
       const res = await fetch('data/articles.json');
       if (!res.ok) throw new Error();
       allArticles = await res.json();
-      const rssArticles = allArticles.filter(a => a.source !== 'The Wise Frontier');
+      const rssArticles = allArticles.filter(a => a.source !== 'NewsFinal');
       const clusters = clusterArticles(rssArticles);
       buildIssues(clusters);
       renderArticles(allArticles);
