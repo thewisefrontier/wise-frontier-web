@@ -571,7 +571,7 @@
         <span>${isOwn ? '✦ The Wise Frontier' : '📎 ' + a.source}</span>
         ${a.region ? `<span>🌍 ${a.region}</span>` : ''}
       </div>
-      <div class="expand-summary">${a.summary_ko || a.summary_en || '요약 정보가 없습니다.'}</div>
+      <div class="expand-summary">${(a.summary_ko || a.summary_en || '요약 정보가 없습니다.').replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>')}</div>
       <div class="expand-footer">
         ${!isOwn ? `<a class="expand-link" href="${a.url}" target="_blank">원문 보기 →</a>` : '<span style="font-family:\'IBM Plex Mono\',monospace;font-size:11px;color:var(--accent);font-weight:700;">ⓒ The Wise Frontier</span>'}
         <button class="expand-close" onclick="closeExpand()">닫기</button>
@@ -635,15 +635,7 @@
     currentIssue = 'all';
     closeExpand();
     document.getElementById('feed-title').textContent = '🔥 주요 이슈';
-    // 클러스터 기사만 score(기사 수) 내림차순으로 표시
-    const issueArticles = allArticles
-      .filter(a => a.source === 'The Wise Frontier' && (a.subcategory || '').startsWith('cluster_'))
-      .sort((a, b) => (b.score || 0) - (a.score || 0));
-    if (issueArticles.length) {
-      renderArticles(issueArticles);
-    } else {
-      renderIssueList();
-    }
+    renderIssueList();
   }
 
   function filterByTag(type, value, event) {
@@ -796,8 +788,9 @@
 
   function renderWire(articles) {
     const container = document.getElementById('wire-container');
-    if (!articles.length) { container.innerHTML = '<div class="empty">준비 중</div>'; return; }
-    container.innerHTML = articles.slice(0,10).map((a,i) => `
+    const rssOnly = articles.filter(a => a.source !== 'The Wise Frontier');
+    if (!rssOnly.length) { container.innerHTML = '<div class="empty">준비 중</div>'; return; }
+    container.innerHTML = rssOnly.slice(0,10).map((a,i) => `
       <div class="wire-item">
         <div class="wire-dot ${i<2?'new':''}"></div>
         <div>
@@ -809,59 +802,25 @@
 
   function renderBriefing(articles) {
     const container = document.getElementById('briefing-container');
+    const ownOnly = articles.filter(a => a.source === 'The Wise Frontier');
     const regions = {};
-
-    articles.forEach(a => {
-      const isOwn = a.source === 'The Wise Frontier';
+    ownOnly.forEach(a => {
       let r;
-      if (isOwn) {
-        // 자체 기사: subcategory 내부 키 대신 category 또는 region 사용
-        if ((a.subcategory || '').startsWith('cluster_')) r = '🔥 이슈';
-        else if ((a.subcategory || '').endsWith('briefing')) r = '📋 브리핑';
-        else r = a.category || a.region || '기타';
-      } else {
-        r = a.subcategory || a.region || '기타';
-      }
+      if ((a.subcategory || '').startsWith('cluster_')) r = '🔥 이슈';
+      else if ((a.subcategory || '').includes('briefing')) r = '📋 브리핑';
+      else r = a.category || '기타';
       if (!regions[r]) regions[r] = [];
       if (regions[r].length < 3) regions[r].push(a);
     });
-
     const html = Object.entries(regions).slice(0, 6).map(([region, items]) => `
       <div class="briefing-item">
         <div class="briefing-region">${region.toUpperCase()}</div>
         ${items.map(a => {
-          const isOwn = a.source === 'The Wise Frontier';
           const title = a.title_ko || a.title_en;
-          if (isOwn) {
-            return `<div class="briefing-title" style="cursor:pointer;" onclick="toggleExpand(${allArticles.indexOf(a)})">· ${title}</div>`;
-          }
-          return `<div class="briefing-title"><a href="${a.url}" target="_blank">· ${title}</a></div>`;
+          return `<div class="briefing-title" style="cursor:pointer;" onclick="toggleExpand(${allArticles.indexOf(a)})">· ${title}</div>`;
         }).join('')}
       </div>`).join('');
-
     container.innerHTML = html || '<div class="empty">브리핑 준비 중</div>';
-  }
-
-  async function loadMarketData() {
-    try {
-      const res = await fetch('data/market_data.json');
-      if (!res.ok) throw new Error();
-      const data = await res.json();
-      document.getElementById('ticker').innerHTML = data.indices.map(item => `
-        <div class="ticker-item">
-          <span class="ticker-label">${item.name}</span>
-          <span class="ticker-val">${Number(item.price).toLocaleString()}</span>
-          <span class="${item.up?'up':'down'}">${item.up?'+':''}${Number(item.change_pct).toFixed(2)}%</span>
-        </div>`).join('');
-      if (data.updated_at) {
-        const utcStr = data.updated_at.replace(' UTC','Z').replace(' ','T');
-        const kst = new Date(new Date(utcStr).getTime() + 9*3600*1000);
-        document.getElementById('market-updated').textContent =
-          `시세 ${pad(kst.getUTCMonth()+1)}/${pad(kst.getUTCDate())} ${pad(kst.getUTCHours())}:${pad(kst.getUTCMinutes())} KST`;
-      }
-    } catch(e) {
-      document.getElementById('ticker').innerHTML = '<span style="color:var(--muted)">시세 준비 중</span>';
-    }
   }
 
   async function loadArticles() {
@@ -869,7 +828,8 @@
       const res = await fetch('data/articles.json');
       if (!res.ok) throw new Error();
       allArticles = await res.json();
-      const clusters = clusterArticles(allArticles);
+      const rssArticles = allArticles.filter(a => a.source !== 'The Wise Frontier');
+      const clusters = clusterArticles(rssArticles);
       buildIssues(clusters);
       renderArticles(allArticles);
       renderWire(allArticles);
