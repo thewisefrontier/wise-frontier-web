@@ -178,9 +178,11 @@
     const body = a.summary_ko || a.summary_en || '';
     const bodyHtml = body.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>');
 
-    // 관련 기사 (같은 카테고리/국가, 최대 4개)
+    // 관련 기사 — 같은 카테고리 또는 같은 지역, 최신순 4개
     const related = allArticles
-      .filter(r => r.id !== a.id && (r.category === a.category || r.country === a.country))
+      .filter(r => r.id !== a.id && r.source === 'NewsFinal' &&
+        (r.category === a.category || r.region === a.region))
+      .sort((x, y) => (y.created_at || '').localeCompare(x.created_at || ''))
       .slice(0, 4);
 
     // 메타 태그 업데이트
@@ -217,7 +219,7 @@
             <div class="related-item">
               <div>
                 <a class="related-item-title" href="/article.html?id=${r.id}">${r.title_ko || r.title_en}</a>
-                <div class="related-meta">${r.source} · ${(r.created_at || '').slice(0,10)}</div>
+                <div class="related-meta">NewsFinal · ${(r.created_at || '').slice(0,10)}</div>
               </div>
             </div>
           `).join('')}
