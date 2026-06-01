@@ -783,27 +783,26 @@
 
   function renderWire(articles) {
     const container = document.getElementById('wire-container');
-    const rssOnly = articles.filter(a => a.source !== 'NewsFinal');
-    if (!rssOnly.length) { container.innerHTML = '<div class="empty">준비 중</div>'; return; }
-    container.innerHTML = rssOnly.slice(0,10).map((a,i) => `
+    const wireArticles = articles.filter(a => a.source === 'NewsFinal');
+    if (!wireArticles.length) { container.innerHTML = '<div class="empty">준비 중</div>'; return; }
+    container.innerHTML = wireArticles.slice(0,10).map((a,i) => `
       <div class="wire-item">
         <div class="wire-dot ${i<2?'new':''}"></div>
         <div>
-          <div class="wire-text"><a href="${a.url}" target="_blank" style="color:inherit;text-decoration:none;">${a.title_ko||a.title_en}</a></div>
-          <div class="wire-meta">${a.source} · <span data-created="${a.created_at}">${formatTime(a.created_at)}</span></div>
+          <div class="wire-text" style="cursor:pointer;" onclick="location.href='article.html?id=${a.id}'">${a.title_ko||a.title_en}</div>
+          <div class="wire-meta">NewsFinal · <span data-created="${a.created_at}">${formatTime(a.created_at)}</span></div>
         </div>
       </div>`).join('');
   }
 
   function renderBriefing(articles) {
     const container = document.getElementById('briefing-container');
-    const ownOnly = articles.filter(a => a.source === 'NewsFinal');
+    const ownOnly = articles.filter(a =>
+      a.source === 'NewsFinal' && !(a.subcategory || '').startsWith('cluster_')
+    );
     const regions = {};
     ownOnly.forEach(a => {
-      let r;
-      if ((a.subcategory || '').startsWith('cluster_')) r = '🔥 이슈';
-      else if ((a.subcategory || '').includes('briefing')) r = '📋 브리핑';
-      else r = a.category || '기타';
+      let r = (a.subcategory || '').includes('briefing') ? '📋 브리핑' : (a.category || '기타');
       if (!regions[r]) regions[r] = [];
       if (regions[r].length < 3) regions[r].push(a);
     });
@@ -823,9 +822,6 @@
       const res = await fetch('data/articles.json');
       if (!res.ok) throw new Error();
       allArticles = await res.json();
-      const rssArticles = allArticles.filter(a => a.source !== 'NewsFinal');
-      const clusters = clusterArticles(rssArticles);
-      buildIssues(clusters);
       renderArticles(allArticles);
       renderWire(allArticles);
       renderBriefing(allArticles);
@@ -843,7 +839,7 @@
       const data = await res.json();
       const indices = data.indices || [];
       if (!indices.length) return;
-      const ticker = document.getElementById('market-ticker');
+      const ticker = document.getElementById('ticker');
       if (!ticker) return;
       ticker.innerHTML = indices.map(m => {
         const sign = m.change_pct >= 0 ? '+' : '';
