@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-06-01 03:04 UTC",
+  "updated_at": "2026-06-01 03:41 UTC",
   "indices": [
     {
       "name": "JSE",
@@ -32,8 +32,8 @@
     {
       "name": "PSEi",
       "symbol": "PSEI.PS",
-      "price": 5851.15,
-      "change_pct": 1.43,
+      "price": 5837.97,
+      "change_pct": 1.2,
       "up": true
     },
     {
@@ -53,9 +53,9 @@
     {
       "name": "USD/ZAR",
       "symbol": "USDZAR=X",
-      "price": 16.19,
-      "change_pct": -0.15,
-      "up": false
+      "price": 16.22,
+      "change_pct": 0.02,
+      "up": true
     }
   ]
 }
