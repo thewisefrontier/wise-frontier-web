@@ -144,7 +144,7 @@
 <div id="login-screen">
   <div class="login-box">
     <div class="login-title">NewsFinal Admin</div>
-    <div class="login-sub">The Wise Frontier 편집 시스템</div>
+    <div class="login-sub">NewsFinal 편집 시스템</div>
     <div class="login-error" id="login-error"></div>
     <input type="email" id="login-email" placeholder="이메일" onkeydown="if(event.key==='Enter')login()" />
     <input type="password" id="login-pw" placeholder="비밀번호" onkeydown="if(event.key==='Enter')login()" />
@@ -168,9 +168,9 @@
   <div class="container">
     <div class="sidebar">
       <div class="sidebar-item active" onclick="showArticles('all',this)">📰 전체 기사</div>
-      <div class="sidebar-item" onclick="showArticles('own',this)">✦ TWF 자체 기사</div>
+      <div class="sidebar-item" onclick="showArticles('own',this)">📰 NewsFinal 기사</div>
       <div class="sidebar-item" onclick="showArticles('cluster',this)">🔥 이슈</div>
-      <div class="sidebar-item" onclick="showArticles('rss',this)">📡 RSS 기사</div>
+      <div class="sidebar-item" onclick="showArticles('rss',this)">📡 수집 기사</div>
       <div class="sidebar-divider"></div>
       <div class="sidebar-item admin-only" id="user-menu" onclick="showUsers(this)">👥 사용자 관리</div>
     </div>
@@ -237,7 +237,7 @@
         </div>
         <div>
           <div class="field-label">출처</div>
-          <input class="field-select" id="edit-source" type="text" placeholder="The Wise Frontier" />
+          <input class="field-select" id="edit-source" type="text" placeholder="NewsFinal" />
         </div>
       </div>
       <div>
@@ -339,9 +339,9 @@
       .order('created_at', { ascending: false })
       .range(currentPage * pageSize, (currentPage + 1) * pageSize - 1);
 
-    if (currentFilter === 'own') query = query.eq('source', 'The Wise Frontier');
-    else if (currentFilter === 'rss') query = query.neq('source', 'The Wise Frontier');
-    else if (currentFilter === 'cluster') query = query.eq('source', 'The Wise Frontier').like('subcategory', 'cluster_%');
+    if (currentFilter === 'own') query = query.eq('source', 'NewsFinal');
+    else if (currentFilter === 'rss') query = query.neq('source', 'NewsFinal');
+    else if (currentFilter === 'cluster') query = query.eq('source', 'NewsFinal').like('subcategory', 'cluster_%');
 
     const searchQ = document.getElementById('search-input')?.value?.trim();
     if (searchQ) query = query.or(`title_ko.ilike.%${searchQ}%,title_en.ilike.%${searchQ}%,country.ilike.%${searchQ}%,source.ilike.%${searchQ}%`);
@@ -467,7 +467,7 @@
     ['edit-id','edit-title-ko','edit-summary-ko','edit-country','edit-url'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('edit-category').value = '';
     document.getElementById('edit-region').value = '';
-    document.getElementById('edit-source').value = 'The Wise Frontier';
+    document.getElementById('edit-source').value = 'NewsFinal';
     document.getElementById('edit-panel').classList.add('open');
     document.getElementById('overlay').classList.add('open');
   }
