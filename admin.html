@@ -341,7 +341,7 @@
 
     if (currentFilter === 'own') query = query.eq('source', 'NewsFinal');
     else if (currentFilter === 'rss') query = query.neq('source', 'NewsFinal');
-    else if (currentFilter === 'cluster') query = query.eq('source', 'NewsFinal').like('subcategory', 'cluster_%');
+    else if (currentFilter === 'cluster') query = query.eq('source', 'NewsFinal').ilike('subcategory', 'cluster_%');
 
     const searchQ = document.getElementById('search-input')?.value?.trim();
     if (searchQ) query = query.or(`title_ko.ilike.%${searchQ}%,title_en.ilike.%${searchQ}%,country.ilike.%${searchQ}%,source.ilike.%${searchQ}%`);
