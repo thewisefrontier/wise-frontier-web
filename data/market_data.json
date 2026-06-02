@@ -1,18 +1,18 @@
 {
-  "updated_at": "2026-06-02 11:06 UTC",
+  "updated_at": "2026-06-02 11:58 UTC",
   "indices": [
     {
       "name": "JSE",
       "symbol": "^J203.JO",
-      "price": 114145.1,
-      "change_pct": 1.89,
+      "price": 113982.86,
+      "change_pct": 1.74,
       "up": true
     },
     {
       "name": "EGX30",
       "symbol": "^CASE30",
-      "price": 53021.0,
-      "change_pct": 0.32,
+      "price": 52927.0,
+      "change_pct": 0.14,
       "up": true
     },
     {
@@ -54,7 +54,7 @@
       "name": "USD/ZAR",
       "symbol": "USDZAR=X",
       "price": 16.2,
-      "change_pct": -0.2,
+      "change_pct": -0.16,
       "up": false
     }
   ]
