@@ -176,7 +176,10 @@
     const isOwn = a.source === 'NewsFinal';
     const title = a.title_ko || a.title_en || '';
     const body = a.summary_ko || a.summary_en || '';
-    const bodyHtml = body.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>');
+    const bodyHtml = body
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')  // **굵게**
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/\n/g, '<br>');
 
     // 관련 기사 — 같은 카테고리 또는 같은 지역, 최신순 4개
     const related = allArticles
