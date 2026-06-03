@@ -215,10 +215,16 @@
       <a class="back-btn" href="/">← 홈으로</a>
 
       <div class="article-tags">
-        ${isOwn ? '<span class="tag tag-own">✦ NewsFinal</span>' : ''}
         ${a.category ? `<a class="tag" href="/?category=${encodeURIComponent(a.category)}">${a.category}</a>` : ''}
-        ${a.subcategory && a.subcategory !== a.category && !a.subcategory.startsWith('cluster_') ? `<a class="tag" href="/?category=${encodeURIComponent(a.subcategory)}">${a.subcategory}</a>` : ''}
-        ${a.country ? `<a class="tag" href="/?country=${encodeURIComponent(a.country)}">${a.country}</a>` : ''}
+        ${a.subcategory && a.subcategory !== a.category
+          && !a.subcategory.startsWith('cluster_')
+          && !a.subcategory.startsWith('solo_')
+          && !a.subcategory.endsWith('briefing')
+          ? `<span class="tag">${a.subcategory}</span>` : ''}
+        ${a.region ? `<span class="tag">${regionKo(a.region)}</span>` : ''}
+        ${a.countries && a.countries.length > 0
+          ? a.countries.map(c => `<a class="tag" href="/?country=${encodeURIComponent(c)}">${c}</a>`).join('')
+          : (a.country ? `<a class="tag" href="/?country=${encodeURIComponent(a.country)}">${a.country}</a>` : '')}
       </div>
 
       <h1 class="article-title">${title}</h1>
