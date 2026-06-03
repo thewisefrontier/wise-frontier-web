@@ -240,7 +240,7 @@
           <input class="field-select" id="edit-source" type="text" placeholder="NewsFinal" />
         </div>
       </div>
-      <div>
+      <div id="url-field">
         <div class="field-label">원문 URL</div>
         <input class="field-input" id="edit-url" type="text" placeholder="https://..." />
       </div>
@@ -457,6 +457,10 @@
     document.getElementById('edit-source').value = data.source || '';
     document.getElementById('edit-url').value = data.url || '';
 
+    // 자체 기사(internal://)는 URL 필드 숨김
+    const isInternal = (data.url || '').startsWith('internal://');
+    document.getElementById('url-field').style.display = isInternal ? 'none' : 'block';
+
     document.getElementById('edit-panel').classList.add('open');
     document.getElementById('overlay').classList.add('open');
   }
@@ -468,6 +472,7 @@
     document.getElementById('edit-category').value = '';
     document.getElementById('edit-region').value = '';
     document.getElementById('edit-source').value = 'NewsFinal';
+    document.getElementById('url-field').style.display = 'none';
     document.getElementById('edit-panel').classList.add('open');
     document.getElementById('overlay').classList.add('open');
   }
