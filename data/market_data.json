@@ -1,11 +1,11 @@
 {
-  "updated_at": "2026-06-03 13:05 UTC",
+  "updated_at": "2026-06-03 15:06 UTC",
   "indices": [
     {
       "name": "JSE",
       "symbol": "^J203.JO",
-      "price": 113376.78,
-      "change_pct": -0.55,
+      "price": 112925.12,
+      "change_pct": -0.95,
       "up": false
     },
     {
@@ -39,22 +39,22 @@
     {
       "name": "USD/NGN",
       "symbol": "USDNGN=X",
-      "price": 1361.8,
-      "change_pct": -0.6,
+      "price": 1357.47,
+      "change_pct": -0.92,
       "up": false
     },
     {
       "name": "USD/KES",
       "symbol": "USDKES=X",
-      "price": 129.55,
-      "change_pct": 0.87,
+      "price": 129.45,
+      "change_pct": 0.79,
       "up": true
     },
     {
       "name": "USD/ZAR",
       "symbol": "USDZAR=X",
       "price": 16.29,
-      "change_pct": -0.03,
+      "change_pct": -0.04,
       "up": false
     }
   ]
