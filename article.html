@@ -141,6 +141,17 @@
     'north_africa': '북아프리카', 'southern_africa': '남아프리카',
   };
   function regionKo(r) { return REGION_KO[r] || r || ''; }
+  function cleanBody(text) {
+    if (!text) return '';
+    return text
+      .replace(/\*\*(.+?)\*\*/g, '$1')
+      .replace(/\*(.+?)\*/g, '$1')
+      .replace(/^#{1,6}\s+/gm, '')
+      .replace(/\[.{1,20}=.{1,30}\]/g, '')
+      .replace(/^\[.{1,30}\]\s*/gm, '')
+      .trim();
+  }
+
   async function loadArticle() {
     const params = new URLSearchParams(location.search);
     const id = params.get('id');
@@ -175,7 +186,7 @@
   function renderArticle(a, allArticles) {
     const isOwn = a.source === 'NewsFinal';
     const title = a.title_ko || a.title_en || '';
-    const body = a.summary_ko || a.summary_en || '';
+    const body = cleanBody(a.summary_ko || a.summary_en || '');
     const bodyHtml = body
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')  // **굵게**
       .replace(/\n\n/g, '</p><p>')

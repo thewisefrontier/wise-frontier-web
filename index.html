@@ -746,6 +746,17 @@
     container.innerHTML = html;
   }
 
+  function cleanBody(text) {
+    if (!text) return '';
+    return text
+      .replace(/\*\*(.+?)\*\*/g, '$1')  // **굵게** 제거
+      .replace(/\*(.+?)\*/g, '$1')       // *이탤릭* 제거
+      .replace(/^#{1,6}\s+/gm, '')       // ## 제목 제거
+      .replace(/\[.{1,20}=.{1,30}\]/g, '') // [도시=출처] 헤더 제거
+      .replace(/^\[.{1,30}\]\s*/gm, '')   // [날짜] 헤더 제거
+      .trim();
+  }
+
   const REGION_KO = {
     'africa': '아프리카', 'southeast_asia': '동남아시아',
     'eastern_europe': '동유럽', 'middle_east': '중동',
@@ -760,7 +771,10 @@
   function renderCard(a, standalone) {
     const idx = allArticles.indexOf(a);
     const catTag = a.category ? `<span class="tag" style="cursor:pointer;" onclick="filterByTag('sector','${a.category}',event)">${a.category}</span>` : '';
-    const subTag = a.subcategory && a.subcategory !== a.category && !a.subcategory.startsWith('cluster_') && !a.subcategory.endsWith('briefing')
+    const subTag = a.subcategory && a.subcategory !== a.category
+      && !a.subcategory.startsWith('cluster_')
+      && !a.subcategory.startsWith('solo_')
+      && !a.subcategory.endsWith('briefing')
       ? `<span class="tag" style="cursor:pointer;" onclick="filterByTag('sector','${a.subcategory}',event)">${a.subcategory}</span>` : '';
     const regionTag = a.region ? `<span class="tag">${regionKo(a.region)}</span>` : '';
     const countryTag = a.countries && a.countries.length > 0
@@ -776,7 +790,7 @@
           <span class="article-time" data-created="${a.created_at}">${formatTime(a.created_at)}</span>
         </div>
         <div class="article-title">${a.title_ko||a.title_en}</div>
-        ${a.summary_ko ? `<div class="article-summary">${a.summary_ko.slice(0,120)}${a.summary_ko.length>120?'…':''}</div>` : ''}
+        ${a.summary_ko ? `<div class="article-summary">${cleanBody(a.summary_ko).slice(0,120)}${a.summary_ko.length>120?'…':''}</div>` : ''}
         <div class="article-footer">
           <span class="article-source">ⓒ NewsFinal</span>
         </div>
@@ -799,24 +813,40 @@
 
   function renderBriefing(articles) {
     const container = document.getElementById('briefing-container');
-    const ownOnly = articles.filter(a =>
-      a.source === 'NewsFinal' && !(a.subcategory || '').startsWith('cluster_')
+    const today = new Date().toISOString().slice(0, 10);
+    const todayArticles = articles.filter(a =>
+      a.source === 'NewsFinal' &&
+      !(a.subcategory || '').startsWith('cluster_') &&
+      (a.created_at || '').startsWith(today)
     );
-    const regions = {};
-    ownOnly.forEach(a => {
-      let r = (a.subcategory || '').includes('briefing') ? '📋 브리핑' : (a.category || '기타');
-      if (!regions[r]) regions[r] = [];
-      if (regions[r].length < 3) regions[r].push(a);
+
+    // 국가별로 그룹화
+    const byCountry = {};
+    todayArticles.forEach(a => {
+      const countries = a.countries && a.countries.length > 0
+        ? a.countries.filter(c => c)
+        : (a.country ? [a.country] : ['기타']);
+      countries.forEach(c => {
+        if (!byCountry[c]) byCountry[c] = [];
+        if (byCountry[c].length < 2) byCountry[c].push(a);
+      });
     });
-    const html = Object.entries(regions).slice(0, 6).map(([region, items]) => `
+
+    if (!Object.keys(byCountry).length) {
+      container.innerHTML = '<div class="empty">오늘 브리핑 준비 중</div>';
+      return;
+    }
+
+    const html = Object.entries(byCountry).slice(0, 8).map(([country, items]) => `
       <div class="briefing-item">
-        <div class="briefing-region">${region.toUpperCase()}</div>
+        <div class="briefing-region">${country}</div>
         ${items.map(a => {
           const title = a.title_ko || a.title_en;
-          return `<div class="briefing-title" style="cursor:pointer;" onclick="toggleExpand(${allArticles.indexOf(a)})">· ${title}</div>`;
+          return `<div class="briefing-title" style="cursor:pointer;" onclick="location.href='article.html?id=${a.id}'">· ${title}</div>`;
         }).join('')}
       </div>`).join('');
-    container.innerHTML = html || '<div class="empty">브리핑 준비 중</div>';
+
+    container.innerHTML = html;
   }
 
   async function loadArticles() {
