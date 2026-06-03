@@ -143,13 +143,22 @@
   function regionKo(r) { return REGION_KO[r] || r || ''; }
   function cleanBody(text) {
     if (!text) return '';
-    return text
+    text = text
       .replace(/\*\*(.+?)\*\*/g, '$1')
       .replace(/\*(.+?)\*/g, '$1')
       .replace(/^#{1,6}\s+/gm, '')
       .replace(/\[.{1,20}=.{1,30}\]/g, '')
-      .replace(/^\[.{1,30}\]\s*/gm, '')
-      .trim();
+      .replace(/^\[.{1,30}\]\s*/gm, '');
+    const promoPatterns = [
+      /[^.]*텔레그램 채널[^.]*\./g,
+      /[^.]*구독[^.]*프리미엄[^.]*\./g,
+      /[^.]*ET Prime[^.]*\./g,
+      /[^.]*뉴스레터[^.]*구독[^.]*\./g,
+      /[^.]*앱[^.]*다운로드[^.]*\./g,
+      /[^.]*더 많은 정보[^.]*방문[^.]*\./g,
+    ];
+    promoPatterns.forEach(p => { text = text.replace(p, ''); });
+    return text.trim();
   }
 
   async function loadArticle() {

@@ -748,13 +748,24 @@
 
   function cleanBody(text) {
     if (!text) return '';
-    return text
-      .replace(/\*\*(.+?)\*\*/g, '$1')  // **굵게** 제거
-      .replace(/\*(.+?)\*/g, '$1')       // *이탤릭* 제거
-      .replace(/^#{1,6}\s+/gm, '')       // ## 제목 제거
-      .replace(/\[.{1,20}=.{1,30}\]/g, '') // [도시=출처] 헤더 제거
-      .replace(/^\[.{1,30}\]\s*/gm, '')   // [날짜] 헤더 제거
-      .trim();
+    // 마크다운 제거
+    text = text
+      .replace(/\*\*(.+?)\*\*/g, '$1')
+      .replace(/\*(.+?)\*/g, '$1')
+      .replace(/^#{1,6}\s+/gm, '')
+      .replace(/\[.{1,20}=.{1,30}\]/g, '')
+      .replace(/^\[.{1,30}\]\s*/gm, '');
+    // 홍보성 문구 제거 — 문장 단위로
+    const promoPatterns = [
+      /[^.]*텔레그램 채널[^.]*\./g,
+      /[^.]*구독[^.]*프리미엄[^.]*\./g,
+      /[^.]*ET Prime[^.]*\./g,
+      /[^.]*뉴스레터[^.]*구독[^.]*\./g,
+      /[^.]*앱[^.]*다운로드[^.]*\./g,
+      /[^.]*더 많은 정보[^.]*방문[^.]*\./g,
+    ];
+    promoPatterns.forEach(p => { text = text.replace(p, ''); });
+    return text.trim();
   }
 
   const REGION_KO = {
