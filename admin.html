@@ -341,10 +341,10 @@
       .order('created_at', { ascending: false })
       .range(currentPage * pageSize, (currentPage + 1) * pageSize - 1);
 
-    if (currentFilter === 'own') query = query.eq('source', 'NewsFinal').eq('sent_telegram', 1);
+    if (currentFilter === 'own') query = query.eq('source', 'NewsFinal').eq('is_published', true);
     else if (currentFilter === 'rss') query = query.neq('source', 'NewsFinal');
     else if (currentFilter === 'cluster') query = query.eq('source', 'NewsFinal').ilike('subcategory', 'cluster_%');
-    else if (currentFilter === 'unpublished') query = query.eq('source', 'NewsFinal').eq('sent_telegram', 0);
+    else if (currentFilter === 'unpublished') query = query.eq('source', 'NewsFinal').eq('is_published', false);
 
     const searchQ = document.getElementById('search-input')?.value?.trim();
     if (searchQ) query = query.or(`title_ko.ilike.%${searchQ}%,title_en.ilike.%${searchQ}%,country.ilike.%${searchQ}%,source.ilike.%${searchQ}%`);
@@ -518,7 +518,7 @@
 
   async function publishArticle(id) {
     if (!confirm('이 기사를 발행하시겠습니까?')) return;
-    const { error } = await sb.from('articles').update({ sent_telegram: 1 }).eq('id', id);
+    const { error } = await sb.from('articles').update({ is_published: true }).eq('id', id);
     if (error) { toast(`오류: ${error.message}`, 'error'); return; }
     toast('발행됐습니다', 'success');
     loadArticles();
