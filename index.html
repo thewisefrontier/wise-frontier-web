@@ -175,24 +175,17 @@
     }
     .article-card.standalone:hover { border-left-color: var(--accent); }
 
-    /* 자체 기사 스타일 */
-    .article-card.own-article {
-      border-left: 3px solid var(--accent);
-      background: linear-gradient(to right, rgba(139,90,43,0.06), transparent);
-    }
-    .article-card.own-article:hover { background: linear-gradient(to right, rgba(139,90,43,0.12), var(--bg3)); }
-    .own-badge {
-      display: inline-flex; align-items: center; gap: 3px;
-      font-family: 'IBM Plex Mono', monospace; font-size: 9px;
-      padding: 2px 7px; background: var(--accent); color: #fff;
-      font-weight: 700; letter-spacing: 0.05em;
-    }
+    /* 자체 기사 스타일 제거 — 모든 기사 동일하게 */
+    .own-badge { display: none; }
 
-    .article-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-    .article-tags { display: flex; gap: 5px; flex-wrap: wrap; }
-    .tag { font-family: 'IBM Plex Mono', monospace; font-size: 10px; padding: 2px 7px; border: 1px solid var(--border); color: var(--muted); background: var(--bg3); }
+    /* 자체 기사 스타일 제거 — 모든 기사 동일하게 */
+    .own-badge { display: none; }
+
+    .article-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; gap: 8px; }
+    .article-tags { display: flex; gap: 5px; flex-wrap: wrap; flex: 1; }
+    .tag { font-family: 'IBM Plex Mono', monospace; font-size: 10px; padding: 2px 7px; border: 1px solid var(--border); color: var(--muted); background: var(--bg3); white-space: nowrap; }
     .tag.country { border-color: var(--accent); color: var(--accent); }
-    .article-time { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); white-space: nowrap; }
+    .article-time { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
     .article-title { font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.4; margin-bottom: 5px; }
     .article-summary { font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 7px; }
     .article-footer { display: flex; justify-content: space-between; align-items: center; }
@@ -253,7 +246,35 @@
     .live-indicator { display: flex; align-items: center; gap: 6px; }
     .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 1.5s infinite; }
 
-    @media (max-width: 900px) { .container { grid-template-columns: 1fr; } .sidebar { display: none; } }
+    @media (max-width: 1024px) {
+      .container { grid-template-columns: 1fr 260px; }
+    }
+    @media (max-width: 768px) {
+      .container { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .header-main { padding: 12px 0; }
+      .logo { font-size: 24px; }
+      .header-meta { display: none; }
+      .search-input { width: 140px; }
+      .search-input:focus { width: 180px; }
+      .header-top { padding: 6px 16px; }
+      .ticker-strip { gap: 12px; }
+      header { padding: 0 16px; }
+      .container { padding: 0; }
+      .main-feed { padding: 0; }
+      .feed-header { padding: 10px 14px; }
+      footer { flex-direction: column; gap: 8px; text-align: center; padding: 16px; }
+    }
+    @media (max-width: 480px) {
+      .logo { font-size: 20px; }
+      .search-input { width: 120px; font-size: 11px; }
+      .nav-sector a { padding: 8px 10px; font-size: 11px; }
+      .region-btn { padding: 8px 10px; font-size: 11px; }
+      .article-card { padding: 12px 14px; }
+      .article-title { font-size: 13px; }
+      header { padding: 0 12px; }
+      .header-top { padding: 5px 12px; }
+    }
   </style>
 </head>
 <body>
@@ -789,7 +810,7 @@
       ? `<span class="tag" style="cursor:pointer;" onclick="filterByTag('sector','${a.subcategory}',event)">${a.subcategory}</span>` : '';
     const regionTag = a.region ? `<span class="tag">${regionKo(a.region)}</span>` : '';
     const countryTag = a.countries && a.countries.length > 0
-      ? a.countries.map(c => `<span class="tag country" style="cursor:pointer;" onclick="filterByTag('country','${c}',event)">${c}</span>`).join('')
+      ? [...new Set(a.countries)].filter(c => c).map(c => `<span class="tag country" style="cursor:pointer;" onclick="filterByTag('country','${c}',event)">${c}</span>`).join('')
       : (a.country ? `<span class="tag country" style="cursor:pointer;" onclick="filterByTag('country','${a.country}',event)">${a.country}</span>` : '');
 
     return `
