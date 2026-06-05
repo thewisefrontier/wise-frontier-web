@@ -1,11 +1,11 @@
 {
-  "updated_at": "2026-06-05 07:04 UTC",
+  "updated_at": "2026-06-05 09:06 UTC",
   "indices": [
     {
       "name": "JSE",
       "symbol": "^J203.JO",
-      "price": 112453.45,
-      "change_pct": 0.0,
+      "price": 112864.28,
+      "change_pct": 0.37,
       "up": true
     },
     {
@@ -18,22 +18,22 @@
     {
       "name": "SET",
       "symbol": "^SET.BK",
-      "price": 1592.26,
-      "change_pct": -0.16,
+      "price": 1584.08,
+      "change_pct": -0.67,
       "up": false
     },
     {
       "name": "IDX",
       "symbol": "^JKSE",
-      "price": 5692.16,
-      "change_pct": -2.53,
+      "price": 5607.98,
+      "change_pct": -3.97,
       "up": false
     },
     {
       "name": "PSEi",
       "symbol": "PSEI.PS",
-      "price": 5962.57,
-      "change_pct": 0.86,
+      "price": 5938.38,
+      "change_pct": 0.45,
       "up": true
     },
     {
@@ -53,8 +53,8 @@
     {
       "name": "USD/ZAR",
       "symbol": "USDZAR=X",
-      "price": 16.29,
-      "change_pct": -0.32,
+      "price": 16.3,
+      "change_pct": -0.26,
       "up": false
     }
   ]
