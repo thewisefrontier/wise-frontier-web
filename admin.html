@@ -246,6 +246,18 @@
         <div class="field-label">원문 URL</div>
         <input class="field-input" id="edit-url" type="text" placeholder="https://..." />
       </div>
+      <div>
+        <div class="field-label">대표 이미지</div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <input class="field-input" id="edit-image-url" type="text" placeholder="이미지 URL" style="flex:1;" />
+          <button class="btn-sm" onclick="document.getElementById('image-file-input').click()">📁 업로드</button>
+          <button class="btn-sm" onclick="generateImage()">✨ AI 생성</button>
+          <input type="file" id="image-file-input" accept="image/*" style="display:none;" onchange="uploadImage(this)" />
+        </div>
+        <div id="image-preview" style="margin-top:8px;display:none;">
+          <img id="image-preview-img" style="max-width:100%;max-height:200px;border:1px solid var(--border);" />
+        </div>
+      </div>
     </div>
     <div class="edit-footer">
       <button class="btn-sm btn-sm-danger admin-only" id="delete-btn" onclick="deleteArticle()">삭제</button>
@@ -460,6 +472,9 @@
     document.getElementById('edit-country').value = data.country || '';
     document.getElementById('edit-source').value = data.source || '';
     document.getElementById('edit-url').value = data.url || '';
+    document.getElementById('edit-image-url').value = data.image_url || '';
+    if (data.image_url) showImagePreview(data.image_url);
+    else { document.getElementById('image-preview').style.display = 'none'; }
 
     // 자체 기사(internal://)는 URL 필드 숨김
     const isInternal = (data.url || '').startsWith('internal://');
@@ -476,6 +491,8 @@
     document.getElementById('edit-category').value = '';
     document.getElementById('edit-region').value = '';
     document.getElementById('edit-source').value = 'NewsFinal';
+    document.getElementById('edit-image-url').value = '';
+    document.getElementById('image-preview').style.display = 'none';
     document.getElementById('url-field').style.display = 'none';
     document.getElementById('edit-panel').classList.add('open');
     document.getElementById('overlay').classList.add('open');
@@ -496,6 +513,7 @@
       country: document.getElementById('edit-country').value,
       source: document.getElementById('edit-source').value,
       url: document.getElementById('edit-url').value,
+      image_url: document.getElementById('edit-image-url').value || null,
     };
 
     if (isNew) {
@@ -737,6 +755,127 @@
     toast(`v${currentVersion + 1}로 저장됐습니다`, 'success');
     document.getElementById('prompt-modal')?.remove();
     showPrompts(document.getElementById('prompt-menu'));
+  }
+
+  // ── 이미지 관리 ─────────────────────────────────────────
+
+  const R2_PUBLIC_URL = 'https://pub-0ef24b5ed85d4cab8a8abfec810cc2af.r2.dev';
+  const UPLOAD_WORKER_URL = 'https://newsfinal-image-upload.thewisefrontier.workers.dev';
+
+  function getUploadSecret() {
+    let secret = sessionStorage.getItem('upload_secret');
+    if (!secret) {
+      secret = prompt('업로드 비밀키 입력:');
+      if (!secret) return null;
+      sessionStorage.setItem('upload_secret', secret);
+    }
+    return secret;
+  }
+
+  async function uploadImage(input) {
+    const file = input.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { toast('5MB 이하 파일만 가능합니다', 'error'); return; }
+
+    const secret = getUploadSecret();
+    if (!secret) return;
+
+    toast('업로드 중...', 'success');
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch(`${UPLOAD_WORKER_URL}/upload`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${secret}` },
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.url) {
+        document.getElementById('edit-image-url').value = data.url;
+        showImagePreview(data.url);
+        toast('업로드 완료!', 'success');
+      } else {
+        toast(`업로드 실패: ${data.error}`, 'error');
+      }
+    } catch(e) {
+      toast(`업로드 실패: ${e.message}`, 'error');
+    }
+  }
+
+  async function generateImage() {
+    const title = document.getElementById('edit-title-ko').value;
+    const category = document.getElementById('edit-category').value;
+    const country = document.getElementById('edit-country').value;
+
+    if (!title) { toast('제목을 먼저 입력하세요', 'error'); return; }
+
+    let geminiKey = sessionStorage.getItem('gemini_key');
+    if (!geminiKey) {
+      geminiKey = prompt('Gemini API Key 입력 (이번 세션에만 저장):');
+      if (!geminiKey) return;
+      sessionStorage.setItem('gemini_key', geminiKey);
+    }
+
+    toast('AI 이미지 생성 중...', 'success');
+
+    try {
+      const prompt = `뉴스 기사 대표 이미지. ${country ? country + ', ' : ''}${category ? category + ' 분야, ' : ''}주제: ${title}. 사실적이고 전문적인 보도사진 스타일. 텍스트 없음.`;
+
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent?key=${geminiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { responseModalities: ['IMAGE', 'TEXT'] }
+        })
+      });
+
+      const data = await res.json();
+      const imagePart = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+
+      if (!imagePart) {
+        toast('이미지 생성 실패 — ' + (data.error?.message || 'API 오류'), 'error');
+        return;
+      }
+
+      const base64 = `data:${imagePart.inlineData.mimeType};base64,${imagePart.inlineData.data}`;
+
+      // R2에 업로드
+      const secret = getUploadSecret();
+      if (secret) {
+        try {
+          const res2 = await fetch(`${UPLOAD_WORKER_URL}/upload`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${secret}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              base64: base64,
+              mimeType: imagePart.inlineData.mimeType,
+              filename: `ai_${Date.now()}.png`,
+            }),
+          });
+          const uploadData = await res2.json();
+          if (uploadData.url) {
+            document.getElementById('edit-image-url').value = uploadData.url;
+            showImagePreview(uploadData.url);
+            toast('AI 이미지 생성 + 업로드 완료!', 'success');
+            return;
+          }
+        } catch(e) {}
+      }
+      // 업로드 실패 시 base64로 임시 저장
+      document.getElementById('edit-image-url').value = base64;
+      showImagePreview(base64);
+      toast('AI 이미지 생성 완료! (R2 업로드 실패 — base64 임시저장)', 'success');
+    } catch(e) {
+      toast(`생성 실패: ${e.message}`, 'error');
+    }
+  }
+
+  function showImagePreview(url) {
+    const preview = document.getElementById('image-preview');
+    const img = document.getElementById('image-preview-img');
+    img.src = url;
+    preview.style.display = 'block';
   }
 
   // ── 토스트 ────────────────────────────────────────────
