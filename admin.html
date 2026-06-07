@@ -414,7 +414,6 @@
       return `
         <tr>
           <td style="max-width:380px;">
-            ${isOwn ? '<span class="tag tag-own">NF</span>' : ''}
             <span class="article-title-text" onclick="openEdit(${a.id})" title="${title.replace(/"/g,'&quot;')}">${title}</span>
           </td>
           <td class="muted">${a.source || ''}</td>
