@@ -836,7 +836,7 @@
     try {
       const prompt = `뉴스 기사 대표 이미지. ${country ? country + ', ' : ''}${category ? category + ' 분야, ' : ''}주제: ${title}. 사실적이고 전문적인 보도사진 스타일. 텍스트 없음.`;
 
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent?key=${geminiKey}`, {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${geminiKey}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
