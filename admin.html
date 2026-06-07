@@ -71,12 +71,18 @@
     .toolbar input:focus, .toolbar select:focus { border-color: var(--accent); }
     .toolbar input { flex: 1; min-width: 180px; }
 
-    .article-table { width: 100%; border-collapse: collapse; }
+    .article-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
     .article-table th {
       text-align: left; padding: 8px 10px; font-size: 11px; color: var(--muted);
       border-bottom: 1px solid var(--border); white-space: nowrap;
     }
-    .article-table td { padding: 8px 10px; font-size: 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .article-table th:nth-child(1) { width: 40%; }
+    .article-table th:nth-child(2) { width: 18%; }
+    .article-table th:nth-child(3) { width: 8%; }
+    .article-table th:nth-child(4) { width: 10%; }
+    .article-table th:nth-child(5) { width: 10%; }
+    .article-table th:nth-child(6) { width: 14%; }
+    .article-table td { padding: 8px 10px; font-size: 12px; border-bottom: 1px solid var(--border); vertical-align: middle; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .article-table tr:hover td { background: var(--bg3); }
     .article-title-text {
       color: var(--text); cursor: pointer; display: block;
@@ -408,7 +414,7 @@
       return `
         <tr>
           <td style="max-width:380px;">
-            ${isOwn ? '<span class="tag tag-own">✦</span>' : ''}
+            ${isOwn ? '<span class="tag tag-own">NF</span>' : ''}
             <span class="article-title-text" onclick="openEdit(${a.id})" title="${title.replace(/"/g,'&quot;')}">${title}</span>
           </td>
           <td class="muted">${a.source || ''}</td>
