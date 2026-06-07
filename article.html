@@ -2,6 +2,14 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-7TKGYEM467"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-7TKGYEM467");
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NewsFinal</title>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
@@ -181,6 +189,17 @@
       }
 
       renderArticle(article, articles);
+
+      // view_count 증가
+      fetch(`https://fotdngseksqaghvtcvqh.supabase.co/rest/v1/rpc/increment_view_count`, {
+        method: 'POST',
+        headers: {
+          'apikey': 'sb_publishable_rT3kSEAAdM0DJlDW5fEWww_M37h6dDW',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ article_id: parseInt(id) })
+      }).catch(() => {});
+
     } catch(e) {
       document.getElementById('article-wrapper').innerHTML = '<div class="error">오류가 발생했습니다.</div>';
     }

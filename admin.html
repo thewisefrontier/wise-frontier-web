@@ -355,7 +355,7 @@
     document.getElementById('main-content').innerHTML = '<div class="loading">로딩 중...</div>';
 
     let query = sb.from('articles')
-      .select('id,title_ko,title_en,source,category,country,region,created_at,subcategory', { count: 'exact' })
+      .select('id,title_ko,title_en,source,category,country,region,created_at,subcategory,view_count', { count: 'exact' })
       .order('created_at', { ascending: false })
       .range(currentPage * pageSize, (currentPage + 1) * pageSize - 1);
 
@@ -398,7 +398,7 @@
           <option value="정치">정치</option>
           <option value="사회">사회</option>
         </select>
-        <span style="font-size:11px;color:var(--muted);margin-left:auto;">총 ${total}건</span>
+        <span style="font-size:11px;color:var(--muted);margin-left:auto;">총 ${total}건 | 총 조회 ${data.reduce((s,a) => s + (a.view_count||0), 0).toLocaleString()}회</span>
       </div>
     `;
 
@@ -420,6 +420,7 @@
           <td><span class="tag">${a.category || ''}</span></td>
           <td class="muted">${a.country || ''}</td>
           <td class="muted">${date}</td>
+          <td class="muted">${a.view_count || 0}</td>
           <td class="actions">
             <button class="btn-sm" onclick="openEdit(${a.id})">편집</button>
             ${currentFilter === 'unpublished' ? `<button class="btn-sm" style="border-color:var(--success);color:var(--success);" onclick="publishArticle(${a.id})">발행</button>` : ''}
@@ -432,7 +433,7 @@
     const table = `
       <table class="article-table">
         <thead><tr>
-          <th>제목</th><th>출처</th><th>분야</th><th>국가</th><th>날짜</th><th>관리</th>
+          <th>제목</th><th>출처</th><th>분야</th><th>국가</th><th>날짜</th><th>조회</th><th>관리</th>
         </tr></thead>
         <tbody>${rows}</tbody>
       </table>
