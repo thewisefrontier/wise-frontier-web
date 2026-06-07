@@ -398,7 +398,7 @@
           <option value="정치">정치</option>
           <option value="사회">사회</option>
         </select>
-        <span style="font-size:11px;color:var(--muted);margin-left:auto;">총 ${total}건 | 총 조회 ${data.reduce((s,a) => s + (a.view_count||0), 0).toLocaleString()}회</span>
+        <span style="font-size:11px;color:var(--muted);margin-left:auto;">총 ${total}건 | 총 조회 ${(articles||[]).reduce((s,a) => s + (a.view_count||0), 0).toLocaleString()}회</span>
       </div>
     `;
 
