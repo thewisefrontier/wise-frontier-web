@@ -2,6 +2,12 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="NewsFinal — 프론티어 미디어">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="NewsFinal">
+  <meta property="og:description" content="">
+  <link rel="canonical" href="https://newsfinal.co.kr/article.html">
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-7TKGYEM467"></script>
   <script>
@@ -229,6 +235,10 @@
 
     // 메타 태그 업데이트
     document.title = `${title} — NewsFinal`;
+    document.querySelector('meta[name="description"]')?.setAttribute('content', cleanBody(a.summary_ko || '').slice(0, 150));
+    document.querySelector('meta[property="og:title"]')?.setAttribute('content', `${title} — NewsFinal`);
+    document.querySelector('meta[property="og:description"]')?.setAttribute('content', cleanBody(a.summary_ko || '').slice(0, 150));
+    document.querySelector('link[rel="canonical"]')?.setAttribute('href', `https://newsfinal.co.kr/article.html?id=${a.id}`);
 
     document.getElementById('article-wrapper').innerHTML = `
       <a class="back-btn" href="/">← 홈으로</a>
