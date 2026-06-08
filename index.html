@@ -147,7 +147,7 @@
       color: var(--muted); padding: 5px 12px;
     }
     .expand-close:hover { border-color: var(--text); color: var(--text); }
-    #articles-container { border: 1px solid var(--border); background: var(--bg2); }
+    #articles-container { background: transparent; }
 
     /* LAYOUT */
     .container {
@@ -172,12 +172,11 @@
     .cluster-kw { font-size: 11px; font-weight: 700; color: var(--accent); font-family: 'IBM Plex Mono', monospace; }
 
     .article-card {
-      border-left: 3px solid transparent; padding: 14px 16px; cursor: pointer;
-      transition: border-left-color 0.2s, background 0.2s; border-bottom: 1px solid var(--border);
-      border-top: none; border-right: none;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-left: 3px solid transparent; padding: 14px 16px;
+      cursor: pointer; margin-bottom: 8px;
+      transition: border-left-color 0.2s, background 0.2s;
     }
-    .article-card:first-child { border-top: 1px solid var(--border); }
-    .article-card:last-child { border-bottom: none; }
     .article-card:hover { border-left-color: var(--accent); background: var(--bg3); }
     .article-card.standalone {
       background: var(--bg2); border: 1px solid var(--border);
@@ -360,15 +359,6 @@
       </div>
       <div id="briefing-container"><div class="empty">데이터 준비 중</div></div>
     </div>
-
-    <!-- WIRE -->
-    <div class="widget">
-      <div class="widget-header">
-        <span>● WIRE</span>
-        <span id="wire-time"></span>
-      </div>
-      <div id="wire-container"><div class="loading">로딩 중</div></div>
-    </div>
   </aside>
 </div>
 
@@ -452,7 +442,7 @@
     const now = nowKST();
     document.getElementById('datetime').textContent =
       `${now.getFullYear()}.${pad(now.getMonth()+1)}.${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())} KST`;
-    document.getElementById('wire-time').textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
   }
   updateTime();
   setInterval(updateTime, 60000);
@@ -465,10 +455,9 @@
   // DB created_at은 UTC로 저장됨
   function formatTime(dateStr) {
     if (!dateStr) return '';
-    const utc = new Date(dateStr.replace(' ', 'T') + 'Z');
-    if (isNaN(utc)) return dateStr;
-    const kst = new Date(utc.getTime() + 9 * 3600 * 1000);
-    return `${pad(kst.getUTCMonth()+1)}/${pad(kst.getUTCDate())} ${pad(kst.getUTCHours())}:${pad(kst.getUTCMinutes())} KST`;
+    const d = new Date(dateStr.replace(' ', 'T'));
+    if (isNaN(d)) return dateStr;
+    return `${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
   }
 
   setInterval(() => {
@@ -898,12 +887,9 @@
       if (!res.ok) throw new Error();
       allArticles = await res.json();
       renderArticles(allArticles);
-      renderWire(allArticles);
       renderBriefing(allArticles);
     } catch(e) {
       document.getElementById('articles-container').innerHTML = `<div class="empty">아직 기사 데이터가 없습니다.<br>곧 업데이트됩니다.</div>`;
-      const wire = document.getElementById('wire-container');
-      if (wire) wire.innerHTML = '<div class="empty">준비 중</div>';
     }
   }
 
