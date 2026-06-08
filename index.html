@@ -147,9 +147,20 @@
       color: var(--muted); padding: 5px 12px;
     }
     .expand-close:hover { border-color: var(--text); color: var(--text); }
-    #articles-container { border: 1px solid var(--border); background: var(--bg2); }
+    #articles-container { background: transparent; }
 
-    /* LAYOUT */
+    .article-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-left: 3px solid transparent; padding: 14px 16px;
+      cursor: pointer; margin-bottom: 8px;
+      transition: border-left-color 0.2s, background 0.2s;
+    }
+    .article-card:hover { border-left-color: var(--accent); background: var(--bg3); }
+    .article-card.standalone {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-left: 3px solid transparent; margin-bottom: 10px;
+    }
+    .article-card.standalone:hover { border-left-color: var(--accent); }
     .container {
       max-width: 1400px; margin: 0 auto; padding: 24px;
       display: grid; grid-template-columns: 1fr 300px; gap: 24px;
@@ -170,20 +181,6 @@
     }
     .cluster-keywords { display: flex; gap: 6px; flex-wrap: wrap; }
     .cluster-kw { font-size: 11px; font-weight: 700; color: var(--accent); font-family: 'IBM Plex Mono', monospace; }
-
-    .article-card {
-      border-left: 3px solid transparent; padding: 14px 16px; cursor: pointer;
-      transition: border-left-color 0.2s, background 0.2s; border-bottom: 1px solid var(--border);
-      border-top: none; border-right: none;
-    }
-    .article-card:first-child { border-top: 1px solid var(--border); }
-    .article-card:last-child { border-bottom: none; }
-    .article-card:hover { border-left-color: var(--accent); background: var(--bg3); }
-    .article-card.standalone {
-      background: var(--bg2); border: 1px solid var(--border);
-      border-left: 3px solid transparent; margin-bottom: 10px;
-    }
-    .article-card.standalone:hover { border-left-color: var(--accent); }
 
     /* 자체 기사 스타일 제거 — 모든 기사 동일하게 */
     .own-badge { display: none; }
@@ -361,14 +358,6 @@
       <div id="briefing-container"><div class="empty">데이터 준비 중</div></div>
     </div>
 
-    <!-- WIRE -->
-    <div class="widget">
-      <div class="widget-header">
-        <span>● WIRE</span>
-        <span id="wire-time"></span>
-      </div>
-      <div id="wire-container"><div class="loading">로딩 중</div></div>
-    </div>
   </aside>
 </div>
 
@@ -464,10 +453,10 @@
   // DB created_at은 UTC로 저장됨
   function formatTime(dateStr) {
     if (!dateStr) return '';
-    const utc = new Date(dateStr.replace(' ', 'T') + 'Z');
-    if (isNaN(utc)) return dateStr;
-    const kst = new Date(utc.getTime() + 9 * 3600 * 1000);
-    return `${pad(kst.getUTCMonth()+1)}/${pad(kst.getUTCDate())} ${pad(kst.getUTCHours())}:${pad(kst.getUTCMinutes())} KST`;
+    // DB에 KST로 저장돼 있으므로 UTC 변환 없이 그대로 파싱
+    const d = new Date(dateStr.replace(' ', 'T'));
+    if (isNaN(d)) return dateStr;
+    return `${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
   }
 
   setInterval(() => {
