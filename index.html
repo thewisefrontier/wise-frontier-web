@@ -18,6 +18,10 @@
     gtag('js', new Date());
     gtag('config', 'G-7TKGYEM467');
   </script>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png">
+  <link rel="shortcut icon" href="/favicon.ico">
   <title>NewsFinal — 프론티어 미디어</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet" />
@@ -538,20 +542,60 @@
   }
 
   // 검색
+  let searchDebounce = null;
+  let searchExtraResults = [];
+
   function onSearch(val) {
     currentQuery = val.trim();
     const clearBtn = document.getElementById('search-clear');
     const info = document.getElementById('search-info');
     clearBtn.style.display = currentQuery ? 'inline-block' : 'none';
+
     const filtered = getFiltered();
-    info.textContent = currentQuery ? `${filtered.length}건` : '';
     document.getElementById('feed-title').textContent = currentQuery ? `🔍 ${currentQuery}` : '● LIVE FEED';
+
+    if (!currentQuery) {
+      searchExtraResults = [];
+      info.textContent = '';
+      renderArticles(filtered);
+      return;
+    }
+
+    info.textContent = `${filtered.length}건 (검색 중...)`;
     renderArticles(filtered);
+
+    // 디바운스 — Supabase 전체 검색
+    clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(() => searchSupabase(currentQuery), 400);
+  }
+
+  async function searchSupabase(query) {
+    if (query !== currentQuery) return;
+    const SUPABASE_URL = 'https://fotdngseksqaghvtcvqh.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_rT3kSEAAdM0DJlDW5fEWww_M37h6dDW';
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/articles?select=*&source=eq.NewsFinal&is_published=eq.true&or=(title_ko.ilike.*${encodeURIComponent(query)}*,summary_ko.ilike.*${encodeURIComponent(query)}*)&order=created_at.desc&limit=50`,
+        { headers: { 'apikey': SUPABASE_ANON_KEY } }
+      );
+      if (!res.ok) return;
+      const results = await res.json();
+      if (query !== currentQuery) return;
+
+      // 기존 allArticles와 중복 제거
+      const existingIds = new Set(allArticles.map(a => a.id));
+      searchExtraResults = results.filter(a => !existingIds.has(a.id));
+
+      const combined = [...getFiltered(), ...searchExtraResults];
+      document.getElementById('search-info').textContent = `${combined.length}건`;
+      renderArticles(combined);
+    } catch(e) {}
   }
 
   function clearSearch() {
     document.getElementById('search-input').value = '';
     currentQuery = '';
+    searchExtraResults = [];
     document.getElementById('search-clear').style.display = 'none';
     document.getElementById('search-info').textContent = '';
     document.getElementById('feed-title').textContent = '● LIVE FEED';
@@ -809,6 +853,7 @@
 
   function renderCard(a, standalone) {
     const idx = allArticles.indexOf(a);
+    const clickAction = idx >= 0 ? `toggleExpand(${idx})` : `location.href='article.html?id=${a.id}'`;
     const catTag = a.category ? `<span class="tag" style="cursor:pointer;" onclick="filterByTag('sector','${a.category}',event)">${a.category}</span>` : '';
     const subTag = a.subcategory && a.subcategory !== a.category
       && !a.subcategory.startsWith('cluster_')
@@ -821,7 +866,7 @@
       : (a.country ? `<span class="tag country" style="cursor:pointer;" onclick="filterByTag('country','${a.country}',event)">${a.country}</span>` : '');
 
     return `
-      <div class="article-card ${standalone?'standalone':''}" data-idx="${idx}" onclick="toggleExpand(${idx})">
+      <div class="article-card ${standalone?'standalone':''}" data-idx="${idx}" onclick="${clickAction}">
         <div class="article-header">
           <div class="article-tags">
             ${catTag}${subTag}${regionTag}${countryTag}
