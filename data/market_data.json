@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-06-13 09:06 UTC",
+  "updated_at": "2026-06-13 09:29 UTC",
   "indices": [
     {
       "name": "JSE",
@@ -14,6 +14,13 @@
       "price": 50818.8,
       "change_pct": -0.85,
       "up": false
+    },
+    {
+      "name": "SET",
+      "symbol": "^SET.BK",
+      "price": 1592.41,
+      "change_pct": 1.28,
+      "up": true
     },
     {
       "name": "IDX",
