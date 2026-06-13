@@ -136,7 +136,8 @@
     <a href="/?category=산업·기업">산업·기업</a> ·
     <a href="/?category=정치·외교">정치·외교</a> ·
     <a href="/?category=사회">사회</a> ·
-    <a href="/?category=IT·과학">IT·과학</a>
+    <a href="/?category=IT·과학">IT·과학</a> ·
+    <a href="/archive.html">아카이브</a>
   </div>
 </header>
 
@@ -230,12 +231,22 @@
       .replace(/\n\n/g, '</p><p>')
       .replace(/\n/g, '<br>');
 
-    // 관련 기사 — 같은 카테고리 또는 같은 지역, 최신순 4개
+    // 관련 기사 — 국가/카테고리/지역 가중치 점수 기반
+    const myCountries = new Set(a.countries && a.countries.length ? a.countries : (a.country ? [a.country] : []));
     const related = allArticles
-      .filter(r => r.id !== a.id && r.source === 'NewsFinal' &&
-        (r.category === a.category || r.region === a.region))
-      .sort((x, y) => (y.created_at || '').localeCompare(x.created_at || ''))
-      .slice(0, 4);
+      .filter(r => r.id !== a.id && r.source === 'NewsFinal')
+      .map(r => {
+        let score = 0;
+        const rCountries = r.countries && r.countries.length ? r.countries : (r.country ? [r.country] : []);
+        if (rCountries.some(c => myCountries.has(c))) score += 10;
+        if (r.category === a.category) score += 3;
+        if (r.region === a.region) score += 1;
+        return { article: r, score };
+      })
+      .filter(x => x.score > 0)
+      .sort((x, y) => y.score - x.score || (y.article.created_at || '').localeCompare(x.article.created_at || ''))
+      .slice(0, 4)
+      .map(x => x.article);
 
     // 메타 태그 업데이트
     document.title = `${title} — NewsFinal`;

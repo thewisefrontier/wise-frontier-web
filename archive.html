@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <meta name="description" content="NewsFinal 기사 아카이브 — 날짜별/국가별/카테고리별 전체 기사 검색">
+  <title>아카이브 — NewsFinal</title>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-7TKGYEM467"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-7TKGYEM467');
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f0e8; --bg2: #fff; --bg3: #faf6f0; --text: #1a1a1a; --muted: #777;
+      --accent: #8b5a2b; --accent2: #5a7a8c; --border: #d8d0c0;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--bg); color: var(--text); font-family: Georgia, serif; line-height: 1.6; }
+
+    .header { background: var(--bg2); border-bottom: 3px double var(--text); padding: 16px 0; text-align: center; }
+    .logo { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; text-decoration: none; color: var(--text); }
+    .logo span { color: var(--accent); }
+    .nav { margin-top: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; }
+    .nav a { color: var(--muted); text-decoration: none; margin: 0 8px; }
+    .nav a:hover { color: var(--accent); }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 32px 20px; }
+
+    h1 { font-family: 'Playfair Display', serif; font-size: 26px; margin-bottom: 16px; }
+
+    .filters {
+      display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap;
+      font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+    }
+    .filters input, .filters select {
+      padding: 8px 12px; border: 1px solid var(--border); background: var(--bg2);
+      color: var(--text); font-family: inherit; font-size: 12px;
+    }
+    .filters input[type="date"] { min-width: 130px; }
+    .filters button {
+      padding: 8px 16px; border: 1px solid var(--accent); background: var(--accent);
+      color: #fff; cursor: pointer; font-family: inherit; font-size: 12px;
+    }
+    .filters button:hover { background: #6e4720; }
+
+    .result-info { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); margin-bottom: 16px; }
+
+    .article-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-left: 3px solid var(--border); padding: 14px 16px;
+      margin-bottom: 8px; cursor: pointer; transition: border-left-color 0.2s, background 0.2s;
+    }
+    .article-card:hover { border-left-color: var(--accent); background: var(--bg3); }
+    .article-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 6px; }
+    .tag { font-family: 'IBM Plex Mono', monospace; font-size: 10px; padding: 2px 7px; border: 1px solid var(--border); color: var(--muted); background: var(--bg3); }
+    .tag.country { border-color: var(--accent); color: var(--accent); }
+    .article-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .article-meta { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); }
+
+    .pagination { display: flex; gap: 6px; justify-content: center; padding: 24px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; align-items: center; }
+    .pagination button {
+      padding: 6px 12px; border: 1px solid var(--border); background: var(--bg2);
+      cursor: pointer; font-family: inherit; font-size: 12px;
+    }
+    .pagination button:disabled { opacity: 0.4; cursor: default; }
+    .pagination button:hover:not(:disabled) { border-color: var(--accent); }
+
+    .empty { text-align: center; padding: 60px 20px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 13px; }
+
+    .footer { margin-top: 48px; padding: 20px 0; border-top: 1px solid var(--border); text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); }
+    .footer a { color: var(--muted); text-decoration: none; margin: 0 8px; }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <a href="/" class="logo">News<span>Final</span></a>
+  <div class="nav">
+    <a href="/">홈</a> · <a href="/about.html">소개</a> · <a href="/archive.html">아카이브</a>
+  </div>
+</header>
+
+<div class="container">
+  <h1>기사 아카이브</h1>
+
+  <div class="filters">
+    <input type="text" id="q" placeholder="검색어 (제목/내용)">
+    <input type="date" id="date-from">
+    <span style="align-self:center;color:var(--muted);">~</span>
+    <input type="date" id="date-to">
+    <select id="category">
+      <option value="">전체 분야</option>
+      <option value="경제">경제</option>
+      <option value="금융">금융</option>
+      <option value="자원·에너지">자원·에너지</option>
+      <option value="산업·기업">산업·기업</option>
+      <option value="정치·외교">정치·외교</option>
+      <option value="사회">사회</option>
+      <option value="IT·과학">IT·과학</option>
+      <option value="글로벌">글로벌</option>
+    </select>
+    <button onclick="search(1)">검색</button>
+  </div>
+
+  <div class="result-info" id="result-info"></div>
+  <div id="results"><div class="empty">검색어 또는 필터를 입력하고 검색해 주세요.</div></div>
+  <div class="pagination" id="pagination"></div>
+</div>
+
+<footer class="footer">
+  <div>NEWSFINAL © 2026</div>
+  <div style="margin-top:6px;">
+    <a href="/about.html">소개</a>
+    <a href="/privacy.html">개인정보처리방침</a>
+  </div>
+</footer>
+
+<script>
+  const SUPABASE_URL = 'https://fotdngseksqaghvtcvqh.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_rT3kSEAAdM0DJlDW5fEWww_M37h6dDW';
+  const PAGE_SIZE = 20;
+  let totalCount = 0;
+  let currentPage = 1;
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function formatTime(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr.replace(' ', 'T'));
+    if (isNaN(d)) return dateStr;
+    return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  const REGION_KO = {
+    'africa': '아프리카', 'southeast_asia': '동남아시아',
+    'eastern_europe': '동유럽', 'middle_east': '중동',
+    'central_asia': '중앙아시아', 'south_asia': '남아시아',
+    'latin_america': '라틴아메리카', 'caribbean': '카리브해',
+    'oceania': '오세아니아', 'global': '글로벌',
+  };
+
+  function cleanBody(text) {
+    if (!text) return '';
+    return text
+      .replace(/\*\*(.+?)\*\*/g, '$1')
+      .replace(/\*(.+?)\*/g, '$1')
+      .replace(/^#{1,6}\s+/gm, '')
+      .replace(/\[.{1,20}=.{1,30}\]/g, '')
+      .replace(/^\[.{1,30}\]\s*/gm, '')
+      .trim();
+  }
+
+  async function search(page) {
+    currentPage = page || 1;
+    const q = document.getElementById('q').value.trim();
+    const dateFrom = document.getElementById('date-from').value;
+    const dateTo = document.getElementById('date-to').value;
+    const category = document.getElementById('category').value;
+
+    const params = new URLSearchParams();
+    params.set('select', '*');
+    params.set('source', 'eq.NewsFinal');
+    params.set('is_published', 'eq.true');
+    params.set('order', 'created_at.desc');
+
+    if (q) {
+      params.set('or', `(title_ko.ilike.*${q}*,summary_ko.ilike.*${q}*)`);
+    }
+    if (dateFrom) params.append('created_at', `gte.${dateFrom}`);
+    if (dateTo) params.append('created_at', `lte.${dateTo} 23:59`);
+    if (category) params.set('category', `eq.${category}`);
+
+    const offset = (currentPage - 1) * PAGE_SIZE;
+    params.set('limit', PAGE_SIZE);
+    params.set('offset', offset);
+
+    document.getElementById('results').innerHTML = '<div class="empty">검색 중...</div>';
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/articles?${params.toString()}`, {
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Prefer': 'count=exact',
+          'Range': `${offset}-${offset + PAGE_SIZE - 1}`,
+        }
+      });
+      const data = await res.json();
+      const contentRange = res.headers.get('content-range');
+      totalCount = contentRange ? parseInt(contentRange.split('/')[1]) : data.length;
+
+      renderResults(data);
+      renderPagination();
+    } catch(e) {
+      document.getElementById('results').innerHTML = `<div class="empty">오류: ${e.message}</div>`;
+    }
+  }
+
+  function renderResults(articles) {
+    const container = document.getElementById('results');
+    const info = document.getElementById('result-info');
+    info.textContent = `총 ${totalCount.toLocaleString()}건`;
+
+    if (!articles.length) {
+      container.innerHTML = '<div class="empty">검색 결과가 없습니다.</div>';
+      return;
+    }
+
+    container.innerHTML = articles.map(a => {
+      const title = a.title_ko || a.title_en;
+      const summary = cleanBody(a.summary_ko || '').slice(0, 100);
+      const catTag = a.category ? `<span class="tag">${a.category}</span>` : '';
+      const regionTag = a.region ? `<span class="tag">${REGION_KO[a.region] || a.region}</span>` : '';
+      const countries = a.countries && a.countries.length ? a.countries : (a.country ? [a.country] : []);
+      const countryTags = [...new Set(countries)].filter(c=>c).map(c => `<span class="tag country">${c}</span>`).join('');
+
+      return `
+        <div class="article-card" onclick="location.href='article.html?id=${a.id}'">
+          <div class="article-tags">${catTag}${regionTag}${countryTags}</div>
+          <div class="article-title">${title}</div>
+          <div class="article-meta">${formatTime(a.created_at)}${summary ? ' · ' + summary + (a.summary_ko && a.summary_ko.length > 100 ? '…' : '') : ''}</div>
+        </div>`;
+    }).join('');
+  }
+
+  function renderPagination() {
+    const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+    const container = document.getElementById('pagination');
+    if (totalPages <= 1) { container.innerHTML = ''; return; }
+
+    let html = '';
+    html += `<button onclick="search(${currentPage-1})" ${currentPage<=1?'disabled':''}>← 이전</button>`;
+    html += `<span style="padding:0 10px;">${currentPage} / ${totalPages}</span>`;
+    html += `<button onclick="search(${currentPage+1})" ${currentPage>=totalPages?'disabled':''}>다음 →</button>`;
+    container.innerHTML = html;
+  }
+
+  // URL 파라미터로 진입 시 자동 검색 (예: ?country=나이지리아)
+  window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(location.search);
+    const q = params.get('q') || params.get('country') || '';
+    const category = params.get('category') || '';
+    if (q) document.getElementById('q').value = q;
+    if (category) document.getElementById('category').value = category;
+    if (q || category) search(1);
+  });
+
+  document.getElementById('q').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') search(1);
+  });
+</script>
+
+</body>
+</html>
