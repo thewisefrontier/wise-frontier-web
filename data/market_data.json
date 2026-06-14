@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-06-14 15:53 UTC",
+  "updated_at": "2026-06-14 17:04 UTC",
   "indices": [
     {
       "name": "JSE",
@@ -46,8 +46,8 @@
     {
       "name": "USD/KES",
       "symbol": "USDKES=X",
-      "price": 129.35,
-      "change_pct": 0.73,
+      "price": 129.66,
+      "change_pct": 0.97,
       "up": true
     },
     {
