@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-06-15 17:06 UTC",
+  "updated_at": "2026-06-15 18:48 UTC",
   "indices": [
     {
       "name": "JSE",
@@ -53,8 +53,8 @@
     {
       "name": "USD/ZAR",
       "symbol": "USDZAR=X",
-      "price": 16.19,
-      "change_pct": -0.53,
+      "price": 16.2,
+      "change_pct": -0.5,
       "up": false
     }
   ]
