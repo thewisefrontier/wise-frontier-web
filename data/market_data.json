@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-06-16 11:29 UTC",
+  "updated_at": "2026-06-16 13:08 UTC",
   "indices": [
     {
       "name": "JSE",
@@ -11,8 +11,8 @@
     {
       "name": "EGX30",
       "symbol": "^CASE30",
-      "price": 51939.4,
-      "change_pct": -0.7,
+      "price": 52047.2,
+      "change_pct": -0.5,
       "up": false
     },
     {
@@ -39,8 +39,8 @@
     {
       "name": "USD/NGN",
       "symbol": "USDNGN=X",
-      "price": 1356.08,
-      "change_pct": -0.3,
+      "price": 1355.62,
+      "change_pct": -0.34,
       "up": false
     },
     {
@@ -53,8 +53,8 @@
     {
       "name": "USD/ZAR",
       "symbol": "USDZAR=X",
-      "price": 16.17,
-      "change_pct": 0.0,
+      "price": 16.18,
+      "change_pct": 0.05,
       "up": true
     }
   ]
