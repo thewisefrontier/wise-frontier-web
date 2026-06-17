@@ -363,9 +363,13 @@
   async function loadArticles() {
     document.getElementById('main-content').innerHTML = '<div class="loading">로딩 중...</div>';
 
+    // 정렬 기준
+    const sortBy = document.getElementById('sort-select')?.value || 'created_at';
+    const sortAsc = sortBy === 'view_count' ? false : false;
+
     let query = sb.from('articles')
-      .select('id,title_ko,title_en,source,category,country,region,created_at,subcategory,view_count', { count: 'exact' })
-      .order('created_at', { ascending: false })
+      .select('id,title_ko,title_en,source,category,country,region,created_at,subcategory,view_count,is_published', { count: 'exact' })
+      .order(sortBy, { ascending: sortAsc })
       .range(currentPage * pageSize, (currentPage + 1) * pageSize - 1);
 
     if (currentFilter === 'own') query = query.eq('source', 'NewsFinal').eq('is_published', true);
@@ -397,17 +401,28 @@
           <option value="eastern_europe">동유럽</option>
           <option value="middle_east">중동</option>
           <option value="central_asia">중앙아시아</option>
+          <option value="south_asia">남아시아</option>
+          <option value="latin_america">라틴아메리카</option>
+          <option value="caribbean">카리브해</option>
+          <option value="global">글로벌</option>
         </select>
         <select id="filter-category" onchange="loadArticles()">
           <option value="">전체 분야</option>
           <option value="경제">경제</option>
-          <option value="금융/증권">금융/증권</option>
-          <option value="자원/에너지">자원/에너지</option>
-          <option value="산업/기업">산업/기업</option>
-          <option value="정치">정치</option>
+          <option value="금융">금융</option>
+          <option value="자원·에너지">자원·에너지</option>
+          <option value="산업·기업">산업·기업</option>
+          <option value="정치·외교">정치·외교</option>
           <option value="사회">사회</option>
+          <option value="IT·과학">IT·과학</option>
+          <option value="글로벌">글로벌</option>
+        </select>
+        <select id="sort-select" onchange="loadArticles()">
+          <option value="created_at">최신순</option>
+          <option value="view_count">조회수순</option>
         </select>
         <span style="font-size:11px;color:var(--muted);margin-left:auto;">총 ${total}건 | 총 조회 ${(articles||[]).reduce((s,a) => s + (a.view_count||0), 0).toLocaleString()}회</span>
+        ${currentFilter === 'unpublished' ? `<button class="btn btn-primary" style="font-size:11px;" onclick="publishAll()">✅ 전체 발행</button>` : ''}
       </div>
     `;
 
@@ -546,6 +561,17 @@
       toast('저장됐습니다', 'success');
     }
     closeEdit();
+    loadArticles();
+  }
+
+  async function publishAll() {
+    if (!confirm('미발행 기사를 전체 발행하시겠습니까?')) return;
+    const { error } = await sb.from('articles')
+      .update({ is_published: true })
+      .eq('source', 'NewsFinal')
+      .eq('is_published', false);
+    if (error) { toast(`오류: ${error.message}`, 'error'); return; }
+    toast('전체 발행됐습니다', 'success');
     loadArticles();
   }
 
