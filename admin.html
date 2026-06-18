@@ -433,12 +433,15 @@
 
     const rows = articles.map(a => {
       const isOwn = a.source === 'NewsFinal';
+      const isUnpublished = isOwn && !a.is_published;
       const title = a.title_ko || a.title_en || '(제목없음)';
       const date = (a.created_at || '').slice(0, 10);
+      const rowStyle = isUnpublished ? 'style="opacity:0.6;"' : '';
+      const unpublishedBadge = isUnpublished ? '<span style="font-size:9px;padding:1px 5px;border:1px solid var(--muted);color:var(--muted);margin-left:4px;">미발행</span>' : '';
       return `
-        <tr>
+        <tr ${rowStyle}>
           <td style="max-width:380px;">
-            <span class="article-title-text" onclick="openEdit(${a.id})" title="${title.replace(/"/g,'&quot;')}">${title}</span>
+            <span class="article-title-text" onclick="openEdit(${a.id})" title="${title.replace(/"/g,'&quot;')}">${title}</span>${unpublishedBadge}
           </td>
           <td class="muted">${a.source || ''}</td>
           <td><span class="tag">${a.category || ''}</span></td>
@@ -447,7 +450,7 @@
           <td class="muted">${a.view_count || 0}</td>
           <td class="actions">
             <button class="btn-sm" onclick="openEdit(${a.id})">편집</button>
-            ${currentFilter === 'unpublished' ? `<button class="btn-sm" style="border-color:var(--success);color:var(--success);" onclick="publishArticle(${a.id})">발행</button>` : ''}
+            ${isUnpublished ? `<button class="btn-sm" style="border-color:var(--success);color:var(--success);" onclick="publishArticle(${a.id})">발행</button>` : ''}
             ${currentRole === 'admin' ? `<button class="btn-sm btn-sm-danger" onclick="confirmDelete(${a.id})">삭제</button>` : ''}
           </td>
         </tr>
