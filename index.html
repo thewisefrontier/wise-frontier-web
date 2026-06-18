@@ -699,9 +699,12 @@
       document.getElementById('search-clear').style.display = 'inline-block';
       currentRegion = 'all'; currentSector = 'all';
       const filtered = getFiltered();
-      document.getElementById('search-info').textContent = `${filtered.length}건`;
+      document.getElementById('search-info').textContent = `${filtered.length}건 | <a href="/archive.html?country=${encodeURIComponent(value)}" style="color:var(--accent2);">전체 보기 →</a>`;
       document.getElementById('feed-title').textContent = `🔍 ${value}`;
       renderArticles(filtered);
+      // Supabase 전체 검색도 실행
+      clearTimeout(searchDebounce);
+      searchDebounce = setTimeout(() => searchSupabase(value), 400);
     }
   }
 
