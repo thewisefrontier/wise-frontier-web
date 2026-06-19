@@ -1,11 +1,11 @@
 {
-  "updated_at": "2026-06-19 23:03 UTC",
+  "updated_at": "2026-06-19 23:06 UTC",
   "indices": [
     {
       "name": "JSE",
       "symbol": "^J203.JO",
       "price": 112610.79,
-      "change_pct": -2.94,
+      "change_pct": -2.08,
       "up": false
     },
     {
