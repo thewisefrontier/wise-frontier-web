@@ -166,6 +166,20 @@
       display: grid; grid-template-columns: 1fr 300px; gap: 24px;
     }
 
+    #digest-box {
+      background: linear-gradient(135deg, #1a1a1a 0%, #2a2118 100%);
+      color: #f0e8d8; padding: 20px 22px; margin-bottom: 16px;
+      border-left: 4px solid #c8a060; cursor: pointer;
+    }
+    #digest-box:hover { background: linear-gradient(135deg, #232323 0%, #322818 100%); }
+    .digest-label {
+      font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #c8a060;
+      letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 8px;
+    }
+    .digest-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; margin-bottom: 8px; line-height: 1.4; }
+    .digest-preview { font-size: 13px; color: #c8bca0; line-height: 1.6; }
+    .digest-more { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #c8a060; margin-top: 10px; }
+
     .feed-header {
       display: flex; justify-content: space-between; align-items: center;
       margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid var(--text);
@@ -354,6 +368,7 @@
 
 <div class="container">
   <main>
+    <div id="digest-box" style="display:none;"></div>
     <div class="feed-header">
       <span class="feed-title" id="feed-title">● LIVE FEED</span>
       <span class="feed-count" id="article-count">로딩 중...</span>
@@ -699,12 +714,9 @@
       document.getElementById('search-clear').style.display = 'inline-block';
       currentRegion = 'all'; currentSector = 'all';
       const filtered = getFiltered();
-      document.getElementById('search-info').textContent = `${filtered.length}건 | <a href="/archive.html?country=${encodeURIComponent(value)}" style="color:var(--accent2);">전체 보기 →</a>`;
+      document.getElementById('search-info').textContent = `${filtered.length}건`;
       document.getElementById('feed-title').textContent = `🔍 ${value}`;
       renderArticles(filtered);
-      // Supabase 전체 검색도 실행
-      clearTimeout(searchDebounce);
-      searchDebounce = setTimeout(() => searchSupabase(value), 400);
     }
   }
 
@@ -936,11 +948,39 @@
     container.innerHTML = html;
   }
 
+  function renderDigest(articles) {
+    const box = document.getElementById('digest-box');
+    const today = new Date().toISOString().slice(0, 10);
+    const digest = articles.find(a =>
+      a.source === 'NewsFinal' &&
+      (a.subcategory || '').startsWith('digest_') &&
+      (a.created_at || '').startsWith(today)
+    ) || articles.find(a => a.source === 'NewsFinal' && (a.subcategory || '').startsWith('digest_'));
+
+    if (!digest) { box.style.display = 'none'; return; }
+
+    const title = digest.title_ko || digest.title_en || '';
+    const body = cleanBody(digest.summary_ko || '');
+    const preview = body.split('\n').filter(l => l.trim()).slice(0, 3).join(' ').slice(0, 180);
+
+    box.innerHTML = `
+      <div class="digest-label">📋 오늘의 프론티어 마켓 다이제스트</div>
+      <div class="digest-title">${title}</div>
+      <div class="digest-preview">${preview}${body.length > 180 ? '…' : ''}</div>
+      <div class="digest-more">전체 보기 →</div>
+    `;
+    box.style.display = 'block';
+    box.onclick = () => location.href = `article.html?id=${digest.id}`;
+  }
+
   async function loadArticles() {
     try {
       const res = await fetch('data/articles.json');
       if (!res.ok) throw new Error();
-      allArticles = await res.json();
+      const raw = await res.json();
+      // 다이제스트는 일반 피드에서 제외하고 별도 박스로
+      allArticles = raw.filter(a => !(a.subcategory || '').startsWith('digest_'));
+      renderDigest(raw);
       renderArticles(allArticles);
       renderBriefing(allArticles);
     } catch(e) {
