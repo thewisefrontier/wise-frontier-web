@@ -1,99 +1,111 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png">
   <link rel="shortcut icon" href="/favicon.ico">
   <title>뉴스파이널 소개 — NewsFinal</title>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #f5f0e8; --bg2: #fff; --text: #1a1a1a; --muted: #666;
-      --accent: #8b5a2b; --border: #d8d0c0;
+      --bg: #f8f6f1; --bg2: #ffffff; --bg3: #f0ede6;
+      --border: #ddd9d0; --text: #1a1a1a; --muted: #888;
+      --accent: #8b5e2a; --accent2: #1a5fa8; --red: #c0392b; --green: #1a7a3c;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: var(--bg); color: var(--text); font-family: Georgia, serif; line-height: 1.8; }
+    body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', sans-serif; font-size: 14px; line-height: 1.7; }
 
-    .header { background: var(--bg2); border-bottom: 3px double var(--text); padding: 16px 0; text-align: center; }
-    .logo { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; text-decoration: none; color: var(--text); }
-    .logo span { color: var(--accent); }
-    .nav { margin-top: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; }
-    .nav a { color: var(--muted); text-decoration: none; margin: 0 8px; }
-    .nav a:hover { color: var(--accent); }
-
-    .hero {
-      background: var(--text); color: var(--bg);
-      padding: 60px 24px; text-align: center;
+    header { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 0 24px; }
+    .header-main {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 0; border-bottom: 3px solid var(--text);
     }
-    .hero-title { font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 700; margin-bottom: 16px; }
+    .logo { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 900; letter-spacing: -1px; color: var(--text); text-decoration: none; }
+    .logo span { color: var(--accent); }
+    .header-meta { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); text-align: right; }
+
+    nav.page-nav { display: flex; gap: 0; overflow-x: auto; background: var(--bg3); border-bottom: 1px solid var(--border); }
+    nav.page-nav a {
+      padding: 9px 14px; font-size: 12px; font-weight: 500; color: var(--muted);
+      text-decoration: none; border-right: 1px solid var(--border); white-space: nowrap;
+      transition: color 0.2s, background 0.2s;
+    }
+    nav.page-nav a:first-child { border-left: 1px solid var(--border); }
+    nav.page-nav a:hover, nav.page-nav a.active { color: var(--accent2); background: var(--bg2); }
+
+    .hero { background: var(--text); color: var(--bg); padding: 56px 24px; text-align: center; }
+    .hero-title { font-family: 'Playfair Display', serif; font-size: 40px; font-weight: 900; margin-bottom: 14px; }
     .hero-title span { color: #c8a060; }
-    .hero-sub { font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #aaa; letter-spacing: 0.1em; }
+    .hero-sub { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #aaa; letter-spacing: 0.1em; }
 
-    .container { max-width: 780px; margin: 0 auto; padding: 48px 24px; }
+    .page-container { max-width: 780px; margin: 0 auto; padding: 44px 24px 60px; }
 
-    .section { margin-bottom: 48px; }
+    .section { margin-bottom: 44px; }
     .section-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 12px; }
-    h2 { font-family: 'Playfair Display', serif; font-size: 24px; margin-bottom: 16px; }
+    h2 { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 900; margin-bottom: 16px; }
     p { font-size: 15px; margin-bottom: 14px; color: #2a2a2a; }
 
-    .divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+    .divider { border: none; border-top: 1px solid var(--border); margin: 44px 0; }
 
-    .coverage-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 20px;
-    }
-    .coverage-item {
-      background: var(--bg2); border: 1px solid var(--border); padding: 16px;
-      text-align: center;
-    }
+    .coverage-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 20px; }
+    .coverage-item { background: var(--bg2); border: 1px solid var(--border); padding: 16px; text-align: center; }
     .coverage-emoji { font-size: 28px; margin-bottom: 8px; }
     .coverage-name { font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 700; color: var(--text); }
     .coverage-desc { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
     .values-list { list-style: none; margin-top: 16px; }
-    .values-list li {
-      padding: 14px 0; border-bottom: 1px solid var(--border);
-      display: flex; gap: 16px; align-items: flex-start;
-    }
+    .values-list li { padding: 14px 0; border-bottom: 1px solid var(--border); display: flex; gap: 16px; align-items: flex-start; }
     .values-list li:last-child { border-bottom: none; }
     .value-num { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--accent); font-weight: 700; min-width: 24px; margin-top: 2px; }
     .value-text { font-size: 15px; }
     .value-text strong { display: block; font-size: 14px; margin-bottom: 4px; }
 
-    .contact-box {
-      background: var(--text); color: var(--bg); padding: 32px;
-      text-align: center; margin-top: 20px;
-    }
-    .contact-box h3 { font-family: 'Playfair Display', serif; font-size: 22px; margin-bottom: 12px; }
+    .contact-box { background: var(--text); color: var(--bg); padding: 32px; text-align: center; margin-top: 20px; }
+    .contact-box h3 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; margin-bottom: 12px; }
     .contact-box p { color: #ccc; font-size: 14px; margin-bottom: 16px; }
     .contact-links { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
     .contact-link {
       font-family: 'IBM Plex Mono', monospace; font-size: 12px;
-      color: #c8a060; text-decoration: none; border: 1px solid #c8a060;
-      padding: 8px 16px;
+      color: #c8a060; text-decoration: none; border: 1px solid #c8a060; padding: 8px 16px;
     }
     .contact-link:hover { background: #c8a060; color: #000; }
 
-    .footer { margin-top: 48px; padding: 20px 0; border-top: 1px solid var(--border); text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); }
-    .footer a { color: var(--muted); text-decoration: none; margin: 0 8px; }
+    footer {
+      border-top: 1px solid var(--border); background: var(--bg2);
+      padding: 24px; text-align: center; font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px; color: var(--muted); margin-top: 0;
+    }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
 
     @media (max-width: 600px) {
+      header { padding: 0 14px; }
+      .logo { font-size: 24px; }
       .coverage-grid { grid-template-columns: repeat(2, 1fr); }
-      .hero-title { font-size: 28px; }
+      .hero-title { font-size: 26px; }
+      .page-container { padding: 32px 16px 40px; }
     }
   </style>
 </head>
 <body>
 
-<header class="header">
-  <a href="/" class="logo">News<span>Final</span></a>
-  <div class="nav">
-    <a href="/">홈</a> · <a href="/archive.html">아카이브</a> · <a href="/calendar.html">경제 일정</a> · <a href="/markets.html">시장 지표</a> · <a href="/country.html">국가별</a> ·
-    <a href="/privacy.html">개인정보처리방침</a>
-    <a href="/terms.html">이용약관</a>
+<header>
+  <div class="header-main">
+    <a href="/" class="logo">News<span>Final</span></a>
+    <div class="header-meta">프론티어 미디어</div>
   </div>
+  <nav class="page-nav">
+    <a href="/">홈</a>
+    <a href="/archive.html">아카이브</a>
+    <a href="/calendar.html">경제 일정</a>
+    <a href="/markets.html">시장 지표</a>
+    <a href="/country.html">국가별</a>
+    <a href="/about.html" class="active">소개</a>
+  </nav>
 </header>
 
 <div class="hero">
@@ -101,7 +113,7 @@
   <div class="hero-sub">FRONTIER MEDIA — 프론티어 미디어</div>
 </div>
 
-<div class="container">
+<div class="page-container">
 
   <div class="section">
     <div class="section-label">About</div>
@@ -202,11 +214,11 @@
 
 </div>
 
-<footer class="footer">
+<footer>
   <div>NEWSFINAL © 2026</div>
   <div style="margin-top:6px;">
-    <a href="/">홈</a>
-    <a href="/privacy.html">개인정보처리방침</a>
+    <a href="/">홈</a> ·
+    <a href="/privacy.html">개인정보처리방침</a> ·
     <a href="/terms.html">이용약관</a>
   </div>
 </footer>
