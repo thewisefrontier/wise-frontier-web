@@ -201,7 +201,8 @@
 
   async function load() {
     try {
-      const today = new Date().toISOString().slice(0, 10);
+      const _n = nowKST();
+      const today = `${_n.getFullYear()}-${pad(_n.getMonth()+1)}-${pad(_n.getDate())}`;
       const res = await fetch(
         `${SUPABASE_URL}/rest/v1/econ_events?select=*&event_date=gte.${today}&is_verified=eq.true&order=event_date.asc,event_time.asc&limit=200`,
         { headers: { 'apikey': SUPABASE_ANON_KEY } }
