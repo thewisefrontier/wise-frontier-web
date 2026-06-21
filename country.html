@@ -110,6 +110,18 @@
     .cal-dot.low { background: var(--muted); }
     .cal-meta { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); }
 
+    .company-disclaimer {
+      font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted);
+      margin-bottom: 10px; padding: 8px 10px; background: var(--bg3); border-left: 3px solid var(--border);
+    }
+    .company-list { display: flex; flex-direction: column; gap: 6px; }
+    .company-item {
+      background: var(--bg2); border: 1px solid var(--border); padding: 9px 12px;
+      display: flex; justify-content: space-between; align-items: center; font-size: 12px;
+    }
+    .company-name { font-weight: 700; color: var(--text); }
+    .company-sector { color: var(--muted); font-size: 11px; }
+
     .empty { text-align: center; padding: 30px 20px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 12px; }
 
     footer {
@@ -169,6 +181,15 @@
     <div class="index-grid" id="market-container"></div>
   </div>
 
+  <div class="section" id="company-section" style="display:none;">
+    <div class="section-header">
+      <span>거래소 대표 기업</span>
+      <a href="/markets.html">전체 보기 →</a>
+    </div>
+    <div class="company-disclaimer">한국에서 직접 매수할 수 없는 종목입니다. 참고용 정보입니다.</div>
+    <div class="company-list" id="company-container"></div>
+  </div>
+
   <div class="section" id="calendar-section" style="display:none;">
     <div class="section-header">
       <span>다가오는 경제 일정</span>
@@ -211,6 +232,36 @@
     '태국': ['SET (태국)'],
     '인도네시아': ['IDX (인도네시아)'],
     '필리핀': ['PSEi (필리핀)'],
+  };
+
+  // 거래소 대표 기업 — 한국에서 직접 매수 불가, 참고용 정보
+  const COUNTRY_COMPANY_MAP = {
+    '나이지리아': [
+      ['Dangote Cement', '시멘트·산업재'],
+      ['Airtel Africa', '통신'],
+      ['MTN Nigeria', '통신'],
+      ['Zenith Bank', '은행'],
+      ['Nigerian Breweries', '소비재(음료)'],
+    ],
+    '케냐': [
+      ['Safaricom', '통신·모바일머니'],
+      ['Equity Group Holdings', '은행'],
+      ['KCB Group', '은행'],
+      ['East African Breweries', '소비재(음료)'],
+    ],
+    '남아공': [
+      ['Naspers / Prosus', '미디어·인터넷투자'],
+      ['Richemont', '명품'],
+      ['MTN Group', '통신'],
+      ['Standard Bank', '은행'],
+      ['Anglo American', '광업'],
+    ],
+    '베트남': [
+      ['VPBank', '은행'],
+      ['FPT Corporation', 'IT서비스'],
+      ['Asia Commercial Bank', '은행'],
+      ['Hoa Phat Group', '철강'],
+    ],
   };
 
   let allArticles = [];
@@ -327,6 +378,21 @@
     section.style.display = 'block';
   }
 
+  function renderCompanies(country) {
+    const section = document.getElementById('company-section');
+    const container = document.getElementById('company-container');
+    const companies = COUNTRY_COMPANY_MAP[country];
+
+    if (!companies || !companies.length) { section.style.display = 'none'; return; }
+
+    container.innerHTML = companies.map(([name, sector]) => `
+      <div class="company-item">
+        <span class="company-name">${name}</span>
+        <span class="company-sector">${sector}</span>
+      </div>`).join('');
+    section.style.display = 'block';
+  }
+
   async function renderCalendar(country) {
     const section = document.getElementById('calendar-section');
     const container = document.getElementById('calendar-container');
@@ -394,6 +460,7 @@
     history.replaceState(null, '', url);
 
     renderMarket(country);
+    renderCompanies(country);
     renderCalendar(country);
     renderArticles(country);
   }
