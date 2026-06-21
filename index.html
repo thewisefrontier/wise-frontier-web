@@ -167,18 +167,19 @@
     }
 
     #digest-box {
-      background: linear-gradient(135deg, #1a1a1a 0%, #2a2118 100%);
-      color: #f0e8d8; padding: 20px 22px; margin-bottom: 16px;
-      border-left: 4px solid #c8a060; cursor: pointer;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      padding: 18px 20px; margin-bottom: 16px; cursor: pointer;
+      transition: background 0.2s, border-left-color 0.2s;
     }
-    #digest-box:hover { background: linear-gradient(135deg, #232323 0%, #322818 100%); }
+    #digest-box:hover { background: var(--bg3); border-left-color: #6e4720; }
     .digest-label {
-      font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #c8a060;
-      letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 8px;
+      font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--accent);
+      letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 8px; font-weight: 700;
     }
-    .digest-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; margin-bottom: 8px; line-height: 1.4; }
-    .digest-preview { font-size: 13px; color: #c8bca0; line-height: 1.6; }
-    .digest-more { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #c8a060; margin-top: 10px; }
+    .digest-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 900; margin-bottom: 8px; line-height: 1.4; color: var(--text); }
+    .digest-preview { font-size: 13px; color: var(--muted); line-height: 1.6; }
+    .digest-more { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--accent2); margin-top: 10px; }
 
     .feed-header {
       display: flex; justify-content: space-between; align-items: center;
@@ -935,7 +936,8 @@
 
   function renderBriefing(articles) {
     const container = document.getElementById('briefing-container');
-    const today = new Date().toISOString().slice(0, 10);
+    const now = nowKST();
+    const today = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
     const todayArticles = articles.filter(a =>
       a.source === 'NewsFinal' &&
       !(a.subcategory || '').startsWith('cluster_') &&
@@ -973,7 +975,8 @@
 
   function renderDigest(articles) {
     const box = document.getElementById('digest-box');
-    const today = new Date().toISOString().slice(0, 10);
+    const now = nowKST();
+    const today = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
     const digest = articles.find(a =>
       a.source === 'NewsFinal' &&
       (a.subcategory || '').startsWith('digest_') &&
@@ -1036,7 +1039,8 @@
     try {
       const SUPABASE_URL = 'https://fotdngseksqaghvtcvqh.supabase.co';
       const SUPABASE_ANON_KEY = 'sb_publishable_rT3kSEAAdM0DJlDW5fEWww_M37h6dDW';
-      const today = new Date().toISOString().slice(0, 10);
+      const now = nowKST();
+      const today = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}`;
       const res = await fetch(
         `${SUPABASE_URL}/rest/v1/econ_events?select=*&event_date=gte.${today}&is_verified=eq.true&order=event_date.asc,event_time.asc&limit=6`,
         { headers: { 'apikey': SUPABASE_ANON_KEY } }
