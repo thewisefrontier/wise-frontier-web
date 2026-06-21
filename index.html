@@ -990,7 +990,7 @@
     const preview = body.split('\n').filter(l => l.trim()).slice(0, 3).join(' ').slice(0, 180);
 
     box.innerHTML = `
-      <div class="digest-label">📋 오늘의 프론티어 마켓 다이제스트</div>
+      <div class="digest-label">📋 어제의 프론티어 마켓 다이제스트</div>
       <div class="digest-title">${title}</div>
       <div class="digest-preview">${preview}${body.length > 180 ? '…' : ''}</div>
       <div class="digest-more">전체 보기 →</div>
@@ -1029,7 +1029,10 @@
         return `<span style="margin-right:24px;">${m.name} <strong>${m.price.toLocaleString()}</strong> <span style="color:${color}">${sign}${m.change_pct.toFixed(2)}%</span></span>`;
       }).join('');
       const updatedEl = document.getElementById('market-updated');
-      if (updatedEl) updatedEl.textContent = `시세 ${data.updated_at}`;
+      if (updatedEl) {
+        const cleanedTime = (data.updated_at || '').replace(' UTC', '').trim();
+        updatedEl.textContent = `시세 ${cleanedTime} KST`;
+      }
     } catch(e) {}
   }
 
