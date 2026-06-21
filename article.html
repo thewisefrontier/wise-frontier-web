@@ -75,6 +75,8 @@
       font-size: 16px; line-height: 1.9; color: var(--text);
     }
     .article-body p { margin-bottom: 20px; }
+    .article-body ul { margin: 0 0 20px 0; padding-left: 22px; }
+    .article-body li { margin-bottom: 10px; }
 
     /* 자체기사 표시 */
     .own-badge {
@@ -224,12 +226,30 @@
 
   function renderArticle(a, allArticles) {
     const isOwn = a.source === 'NewsFinal';
+    const isDigest = (a.subcategory || '').startsWith('digest_');
     const title = a.title_ko || a.title_en || '';
     const body = cleanBody(a.summary_ko || a.summary_en || '');
-    const bodyHtml = body
+
+    // "- " 불릿 라인들을 <ul><li>로 묶어서 변환
+    const bulletified = body.split('\n').reduce((acc, line) => {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('- ')) {
+        if (!acc.inList) { acc.html += '<ul>'; acc.inList = true; }
+        acc.html += `<li>${trimmed.slice(2)}</li>`;
+      } else {
+        if (acc.inList) { acc.html += '</ul>'; acc.inList = false; }
+        acc.html += line + '\n';
+      }
+      return acc;
+    }, { html: '', inList: false });
+    let processedBody = bulletified.html + (bulletified.inList ? '</ul>' : '');
+
+    const bodyHtml = processedBody
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')  // **굵게**
       .replace(/\n\n/g, '</p><p>')
-      .replace(/\n/g, '<br>');
+      .replace(/\n/g, '<br>')
+      .replace(/<br>(<ul>)/g, '$1')
+      .replace(/(<\/ul>)<br>/g, '$1');
 
     // 관련 기사 — 국가/카테고리/지역 가중치 점수 기반
     const myCountries = new Set(a.countries && a.countries.length ? a.countries : (a.country ? [a.country] : []));
