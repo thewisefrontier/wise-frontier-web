@@ -990,7 +990,7 @@
     const preview = body.split('\n').filter(l => l.trim()).slice(0, 3).join(' ').slice(0, 180);
 
     box.innerHTML = `
-      <div class="digest-label">📋 어제의 프론티어 마켓 다이제스트</div>
+      <div class="digest-label">📋 오늘의 다이제스트</div>
       <div class="digest-title">${title}</div>
       <div class="digest-preview">${preview}${body.length > 180 ? '…' : ''}</div>
       <div class="digest-more">전체 보기 →</div>
