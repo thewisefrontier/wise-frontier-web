@@ -39,15 +39,15 @@
     .header-top {
       display: flex; justify-content: space-between; align-items: center;
       border-bottom: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace;
-      font-size: 11px; color: var(--muted); background: var(--bg3);
-      margin: 0 -24px; padding: 8px 24px; gap: 16px;
+      font-size: 10px; color: var(--muted); background: var(--bg3);
+      margin: 0 -24px; padding: 5px 24px; gap: 16px; line-height: 1.4;
     }
-    .ticker-strip { display: flex; gap: 20px; overflow: hidden; flex: 1; }
-    .ticker-item { display: flex; gap: 6px; align-items: center; white-space: nowrap; }
+    .ticker-strip { display: flex; gap: 18px; overflow: hidden; flex: 1; }
+    .ticker-item { display: flex; gap: 5px; align-items: center; white-space: nowrap; }
     .ticker-label { color: var(--muted); }
     .ticker-val { color: var(--text); font-weight: 500; }
     .up { color: var(--green); } .down { color: var(--red); }
-    .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; white-space: nowrap; }
+    .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; white-space: nowrap; }
 
     .header-main {
       display: flex; align-items: center; justify-content: space-between;
@@ -895,6 +895,7 @@
     const subTag = a.subcategory && a.subcategory !== a.category
       && !a.subcategory.startsWith('cluster_')
       && !a.subcategory.startsWith('solo_')
+      && !a.subcategory.startsWith('digest_')
       && !a.subcategory.endsWith('briefing')
       ? `<span class="tag" style="cursor:pointer;" onclick="filterByTag('sector','${a.subcategory}',event)">${a.subcategory}</span>` : '';
     const regionTag = a.region ? `<span class="tag">${regionKo(a.region)}</span>` : '';
