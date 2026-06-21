@@ -719,7 +719,7 @@
               <td class="muted">${ev.event_date}</td>
               <td class="muted">${ev.event_time || '-'}</td>
               <td class="muted">${ev.country_flag || ''} ${ev.country || ''}</td>
-              <td>${ev.title}${ev.description ? `<div style="font-size:10px;color:var(--muted);margin-top:2px;">${ev.description}</div>` : ''}</td>
+              <td>${ev.title}${ev.description ? `<div style="font-size:10px;color:var(--muted);margin-top:2px;">${ev.description}</div>` : ''}${ev.source_url ? `<div style="margin-top:3px;"><a href="${ev.source_url}" target="_blank" rel="noopener" style="font-size:10px;color:var(--accent2);" onclick="event.stopPropagation();">🔗 출처 확인</a></div>` : (pending ? `<div style="font-size:10px;color:var(--danger);margin-top:3px;">⚠️ 출처 없음</div>` : '')}</td>
               <td>${IMPORTANCE_LABEL[ev.importance] || ev.importance}</td>
               <td>${pending ? '<span style="font-size:10px;color:var(--accent);">⏳ 대기</span>' : '<span style="font-size:10px;color:var(--success);">✅ 게시</span>'}</td>
               <td class="actions">
