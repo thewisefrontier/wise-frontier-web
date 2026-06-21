@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <meta name="description" content="NewsFinal 시장 지표 — 미국, 한국, 아프리카·프론티어 마켓 주요 지수 및 환율">
+  <title>시장 지표 — NewsFinal</title>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-7TKGYEM467"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-7TKGYEM467');
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f0e8; --bg2: #fff; --bg3: #faf6f0; --text: #1a1a1a; --muted: #777;
+      --accent: #8b5a2b; --accent2: #5a7a8c; --border: #d8d0c0;
+      --up: #1a7a4c; --down: #b8442e;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--bg); color: var(--text); font-family: Georgia, serif; line-height: 1.6; }
+
+    .header { background: var(--bg2); border-bottom: 3px double var(--text); padding: 16px 0; text-align: center; }
+    .logo { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; text-decoration: none; color: var(--text); }
+    .logo span { color: var(--accent); }
+    .nav { margin-top: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; }
+    .nav a { color: var(--muted); text-decoration: none; margin: 0 8px; }
+    .nav a:hover { color: var(--accent); }
+
+    .container { max-width: 800px; margin: 0 auto; padding: 32px 20px; }
+
+    h1 { font-family: 'Playfair Display', serif; font-size: 26px; margin-bottom: 6px; }
+    .sub { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); margin-bottom: 28px; }
+
+    .group { margin-bottom: 28px; }
+    .group-header {
+      font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 700;
+      color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase;
+      padding-bottom: 6px; margin-bottom: 10px; border-bottom: 2px solid var(--text);
+    }
+    .index-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px;
+    }
+    .index-card {
+      background: var(--bg2); border: 1px solid var(--border); padding: 12px 14px;
+    }
+    .index-name { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .index-price { font-family: 'IBM Plex Mono', monospace; font-size: 16px; font-weight: 700; }
+    .index-change { font-family: 'IBM Plex Mono', monospace; font-size: 12px; margin-top: 3px; }
+    .index-change.up { color: var(--up); }
+    .index-change.down { color: var(--down); }
+
+    .empty { text-align: center; padding: 50px 20px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 13px; }
+    .source-note { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 24px; text-align: center; }
+
+    .footer { margin-top: 48px; padding: 20px 0; border-top: 1px solid var(--border); text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); }
+    .footer a { color: var(--muted); text-decoration: none; margin: 0 8px; }
+
+    @media (max-width: 480px) {
+      .index-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <a href="/" class="logo">News<span>Final</span></a>
+  <div class="nav">
+    <a href="/">홈</a> · <a href="/about.html">소개</a> · <a href="/archive.html">아카이브</a> · <a href="/calendar.html">경제 일정</a> · <a href="/markets.html">시장 지표</a>
+  </div>
+</header>
+
+<div class="container">
+  <h1>시장 지표</h1>
+  <div class="sub" id="updated-at">불러오는 중...</div>
+
+  <div id="markets-container"><div class="empty">시장 데이터를 불러오는 중입니다...</div></div>
+
+  <div class="source-note">데이터 출처: Yahoo Finance · 약 2시간 간격 갱신 · 투자 참고용이며 실시간 시세와 차이가 있을 수 있습니다</div>
+</div>
+
+<footer class="footer">
+  <div>NEWSFINAL © 2026</div>
+  <div style="margin-top:6px;">
+    <a href="/about.html">소개</a>
+    <a href="/privacy.html">개인정보처리방침</a>
+  </div>
+</footer>
+
+<script>
+  const GROUP_LABELS = {
+    us: '🇺🇸 미국',
+    kr: '🇰🇷 한국',
+    frontier: '🌍 아프리카 · 프론티어 마켓',
+    fx: '💱 환율',
+  };
+  const GROUP_ORDER = ['us', 'kr', 'frontier', 'fx'];
+
+  function renderGroup(key, items) {
+    if (!items || !items.length) return '';
+    return `
+      <div class="group">
+        <div class="group-header">${GROUP_LABELS[key] || key}</div>
+        <div class="index-grid">
+          ${items.map(m => {
+            const sign = m.change_pct >= 0 ? '+' : '';
+            const cls = m.change_pct >= 0 ? 'up' : 'down';
+            const arrow = m.change_pct >= 0 ? '▲' : '▼';
+            return `
+              <div class="index-card">
+                <div class="index-name">${m.name}</div>
+                <div class="index-price">${m.price.toLocaleString()}</div>
+                <div class="index-change ${cls}">${arrow} ${sign}${m.change_pct.toFixed(2)}%</div>
+              </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+  }
+
+  async function load() {
+    try {
+      const res = await fetch('data/market_data.json');
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+
+      document.getElementById('updated-at').textContent = `기준: ${data.updated_at || ''}`;
+
+      const groups = data.groups || {};
+      let html = '';
+      let hasAny = false;
+      GROUP_ORDER.forEach(key => {
+        const g = renderGroup(key, groups[key]);
+        if (g) { html += g; hasAny = true; }
+      });
+
+      // groups가 없는 구버전 데이터 호환
+      if (!hasAny && data.indices && data.indices.length) {
+        html = renderGroup('frontier', data.indices);
+      }
+
+      document.getElementById('markets-container').innerHTML = html || '<div class="empty">표시할 시장 데이터가 없습니다</div>';
+    } catch(e) {
+      document.getElementById('markets-container').innerHTML = '<div class="empty">시장 데이터를 불러올 수 없습니다</div>';
+    }
+  }
+
+  load();
+</script>
+
+</body>
+</html>
