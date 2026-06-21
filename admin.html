@@ -180,6 +180,8 @@
       <div class="sidebar-item" onclick="showArticles('rss',this)">📡 수집 기사</div>
       <div class="sidebar-item" onclick="showArticles('unpublished',this)">📋 미발행 기사</div>
       <div class="sidebar-divider"></div>
+      <div class="sidebar-item" id="calendar-menu" onclick="showCalendar(this)">📅 경제 일정 관리</div>
+      <div class="sidebar-divider"></div>
       <div class="sidebar-item admin-only" id="user-menu" onclick="showUsers(this)">👥 사용자 관리</div>
       <div class="sidebar-item admin-only" id="prompt-menu" onclick="showPrompts(this)">✏️ 프롬프트 관리</div>
     </div>
@@ -671,6 +673,144 @@
     const name = prompt('이름:');
     const role = confirm('관리자 권한을 부여하시겠습니까?\n(확인: 관리자, 취소: 기자)') ? 'admin' : 'reporter';
     toast(`${email} 초대 링크를 Supabase Auth에서 직접 발송해주세요.\n역할: ${role === 'admin' ? '관리자' : '기자'}`, 'success');
+  }
+
+  // ── 경제 일정 관리 ───────────────────────────────────────
+
+  const IMPORTANCE_LABEL = { high: '🔴 높음', medium: '🟡 중간', low: '⚪ 낮음' };
+
+  async function showCalendar(el) {
+    currentSection = 'calendar';
+    document.querySelectorAll('.sidebar-item').forEach(e => e.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('main-content').innerHTML = '<div class="loading">로딩 중...</div>';
+
+    const { data, error } = await sb.from('econ_events')
+      .select('*')
+      .gte('event_date', new Date(Date.now() - 7*86400000).toISOString().slice(0,10))
+      .order('event_date', { ascending: true })
+      .order('event_time', { ascending: true });
+
+    if (error) { document.getElementById('main-content').innerHTML = `<div class="empty">오류: ${error.message}</div>`; return; }
+
+    const html = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <span style="font-size:13px;font-weight:700;">경제 일정 관리</span>
+        <button class="btn btn-primary" style="font-size:11px;" onclick="openEventForm()">+ 일정 추가</button>
+      </div>
+      <table class="article-table">
+        <thead><tr>
+          <th style="width:90px;">날짜</th><th style="width:60px;">시간</th>
+          <th style="width:100px;">국가</th><th>제목</th>
+          <th style="width:80px;">중요도</th><th style="width:110px;">관리</th>
+        </tr></thead>
+        <tbody>
+          ${data.length === 0 ? '<tr><td colspan="6" class="empty">등록된 일정이 없습니다</td></tr>' : data.map(ev => `
+            <tr>
+              <td class="muted">${ev.event_date}</td>
+              <td class="muted">${ev.event_time || '-'}</td>
+              <td class="muted">${ev.country_flag || ''} ${ev.country || ''}</td>
+              <td>${ev.title}</td>
+              <td>${IMPORTANCE_LABEL[ev.importance] || ev.importance}</td>
+              <td class="actions">
+                <button class="btn-sm" onclick="openEventForm(${ev.id})">편집</button>
+                <button class="btn-sm btn-sm-danger" onclick="deleteEvent(${ev.id})">삭제</button>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+    document.getElementById('main-content').innerHTML = html;
+  }
+
+  async function openEventForm(id) {
+    let ev = { event_date: new Date().toISOString().slice(0,10), event_time: '', country: '', country_flag: '', title: '', description: '', importance: 'medium' };
+    if (id) {
+      const { data } = await sb.from('econ_events').select('*').eq('id', id).single();
+      if (data) ev = data;
+    }
+
+    const modal = document.createElement('div');
+    modal.id = 'event-modal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:150;display:flex;align-items:center;justify-content:center;';
+    modal.innerHTML = `
+      <div style="background:var(--bg2);border:1px solid var(--border);width:500px;max-height:90vh;overflow-y:auto;">
+        <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:13px;font-weight:700;color:var(--accent);">${id ? '일정 편집' : '새 일정 추가'}</span>
+          <button class="btn-sm" onclick="document.getElementById('event-modal').remove()">✕ 닫기</button>
+        </div>
+        <div style="padding:16px;display:flex;flex-direction:column;gap:10px;">
+          <div>
+            <div class="field-label">날짜</div>
+            <input class="field-input" id="ev-date" type="date" value="${ev.event_date}">
+          </div>
+          <div>
+            <div class="field-label">시간 (예: 07:00, 현지시각 또는 KST 명시)</div>
+            <input class="field-input" id="ev-time" type="text" value="${ev.event_time || ''}" placeholder="07:00 KST">
+          </div>
+          <div>
+            <div class="field-label">국가</div>
+            <input class="field-input" id="ev-country" type="text" value="${ev.country || ''}" placeholder="나이지리아">
+          </div>
+          <div>
+            <div class="field-label">국기 이모지</div>
+            <input class="field-input" id="ev-flag" type="text" value="${ev.country_flag || ''}" placeholder="🇳🇬">
+          </div>
+          <div>
+            <div class="field-label">제목</div>
+            <input class="field-input" id="ev-title" type="text" value="${(ev.title||'').replace(/"/g,'&quot;')}" placeholder="중앙은행 기준금리 결정">
+          </div>
+          <div>
+            <div class="field-label">설명 (선택)</div>
+            <textarea class="field-input" id="ev-desc" style="min-height:60px;">${ev.description || ''}</textarea>
+          </div>
+          <div>
+            <div class="field-label">중요도</div>
+            <select class="field-select" id="ev-importance">
+              <option value="high" ${ev.importance==='high'?'selected':''}>🔴 높음</option>
+              <option value="medium" ${ev.importance==='medium'?'selected':''}>🟡 중간</option>
+              <option value="low" ${ev.importance==='low'?'selected':''}>⚪ 낮음</option>
+            </select>
+          </div>
+        </div>
+        <div style="padding:14px 18px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;">
+          <button class="btn btn-secondary" style="font-size:11px;" onclick="document.getElementById('event-modal').remove()">취소</button>
+          <button class="btn btn-primary" style="font-size:11px;" onclick="saveEvent(${id || 'null'})">저장</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+
+  async function saveEvent(id) {
+    const payload = {
+      event_date: document.getElementById('ev-date').value,
+      event_time: document.getElementById('ev-time').value,
+      country: document.getElementById('ev-country').value,
+      country_flag: document.getElementById('ev-flag').value,
+      title: document.getElementById('ev-title').value,
+      description: document.getElementById('ev-desc').value,
+      importance: document.getElementById('ev-importance').value,
+    };
+    if (!payload.title || !payload.event_date) { toast('날짜와 제목은 필수입니다', 'error'); return; }
+
+    const { error } = id
+      ? await sb.from('econ_events').update(payload).eq('id', id)
+      : await sb.from('econ_events').insert(payload);
+
+    if (error) { toast(`오류: ${error.message}`, 'error'); return; }
+    toast('저장됐습니다', 'success');
+    document.getElementById('event-modal')?.remove();
+    showCalendar(document.getElementById('calendar-menu'));
+  }
+
+  async function deleteEvent(id) {
+    if (!confirm('이 일정을 삭제하시겠습니까?')) return;
+    const { error } = await sb.from('econ_events').delete().eq('id', id);
+    if (error) { toast(`오류: ${error.message}`, 'error'); return; }
+    toast('삭제됐습니다', 'success');
+    showCalendar(document.getElementById('calendar-menu'));
   }
 
   // ── 프롬프트 관리 ─────────────────────────────────────────
