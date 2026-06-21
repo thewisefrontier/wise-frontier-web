@@ -243,6 +243,19 @@
       display: flex; justify-content: space-between; align-items: center;
     }
     .issue-item:hover, .issue-item.active { background: var(--bg3); }
+
+    /* 경제일정 위젯 */
+    .cal-item {
+      padding: 9px 14px; border-bottom: 1px solid var(--border);
+      font-size: 12px; display: flex; gap: 8px; align-items: flex-start;
+    }
+    .cal-item:last-child { border-bottom: none; }
+    .cal-dot { width: 7px; height: 7px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+    .cal-dot.high { background: #c0392b; }
+    .cal-dot.medium { background: #c8a060; }
+    .cal-dot.low { background: var(--muted); }
+    .cal-meta { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); margin-bottom: 2px; }
+    .cal-title { color: var(--text); line-height: 1.4; }
     .issue-item:last-child { border-bottom: none; }
     .issue-kw { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--accent); font-weight: 700; }
     .issue-count { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); }
@@ -377,7 +390,16 @@
   </main>
 
   <aside class="sidebar">
-    <!-- 브리핑 — 상단 -->
+    <!-- 경제 일정 — 최상단 -->
+    <div class="widget">
+      <div class="widget-header">
+        <span>📅 이번 주 일정</span>
+        <a href="/calendar.html" style="font-size:10px;color:var(--accent2);text-decoration:none;font-family:'IBM Plex Mono',monospace;">전체 →</a>
+      </div>
+      <div id="calendar-widget"><div class="empty">데이터 준비 중</div></div>
+    </div>
+
+    <!-- 브리핑 -->
     <div class="widget">
       <div class="widget-header">
         <span>오늘의 브리핑</span>
@@ -391,7 +413,7 @@
 <footer>
 
   <div>NEWSFINAL © 2026</div>
-  <div><a href="/about.html" style="color:var(--muted);text-decoration:none;font-family:'IBM Plex Mono',monospace;font-size:11px;">소개</a> · <a href="/archive.html" style="color:var(--muted);text-decoration:none;font-family:'IBM Plex Mono',monospace;font-size:11px;">아카이브</a> · <a href="/privacy.html" style="color:var(--muted);text-decoration:none;font-family:'IBM Plex Mono',monospace;font-size:11px;">개인정보처리방침</a></div>
+  <div><a href="/about.html" style="color:var(--muted);text-decoration:none;font-family:'IBM Plex Mono',monospace;font-size:11px;">소개</a> · <a href="/archive.html" style="color:var(--muted);text-decoration:none;font-family:'IBM Plex Mono',monospace;font-size:11px;">아카이브</a> · <a href="/calendar.html" style="color:var(--muted);text-decoration:none;font-family:'IBM Plex Mono',monospace;font-size:11px;">경제 일정</a> · <a href="/privacy.html" style="color:var(--muted);text-decoration:none;font-family:'IBM Plex Mono',monospace;font-size:11px;">개인정보처리방침</a></div>
   <div><a href="https://t.me/TheWiseFrontier" style="color:var(--accent2);text-decoration:none;">텔레그램 채널 →</a></div>
 </footer>
 
@@ -1007,8 +1029,43 @@
     } catch(e) {}
   }
 
+  async function loadCalendarWidget() {
+    const container = document.getElementById('calendar-widget');
+    if (!container) return;
+    try {
+      const SUPABASE_URL = 'https://fotdngseksqaghvtcvqh.supabase.co';
+      const SUPABASE_ANON_KEY = 'sb_publishable_rT3kSEAAdM0DJlDW5fEWww_M37h6dDW';
+      const today = new Date().toISOString().slice(0, 10);
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/econ_events?select=*&event_date=gte.${today}&order=event_date.asc,event_time.asc&limit=6`,
+        { headers: { 'apikey': SUPABASE_ANON_KEY } }
+      );
+      if (!res.ok) throw new Error();
+      const events = await res.json();
+      if (!events.length) {
+        container.innerHTML = '<div class="empty">예정된 일정이 없습니다</div>';
+        return;
+      }
+      container.innerHTML = events.map(ev => {
+        const d = new Date(ev.event_date + 'T00:00:00');
+        const dateStr = `${d.getMonth()+1}/${d.getDate()}`;
+        return `
+          <div class="cal-item">
+            <div class="cal-dot ${ev.importance || 'medium'}"></div>
+            <div>
+              <div class="cal-meta">${dateStr}${ev.event_time ? ' ' + ev.event_time : ''} ${ev.country_flag || ''} ${ev.country || ''}</div>
+              <div class="cal-title">${ev.title}</div>
+            </div>
+          </div>`;
+      }).join('');
+    } catch(e) {
+      container.innerHTML = '<div class="empty">일정을 불러올 수 없습니다</div>';
+    }
+  }
+
   loadMarketData();
   loadArticles();
+  loadCalendarWidget();
 </script>
 </body>
 </html>
