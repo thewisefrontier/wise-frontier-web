@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="NewsFinal — 프론티어 미디어">
   <meta property="og:type" content="article">
   <meta property="og:title" content="NewsFinal">
@@ -16,143 +16,170 @@
     gtag("js", new Date());
     gtag("config", "G-7TKGYEM467");
   </script>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png">
   <link rel="shortcut icon" href="/favicon.ico">
   <title>NewsFinal</title>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #f5f0e8; --bg2: #fff; --bg3: #f0ebe0;
-      --border: #d8d0c0; --text: #1a1a1a; --muted: #888;
-      --accent: #8b5a2b; --accent2: #2b5a8b;
+      --bg: #f8f6f1; --bg2: #ffffff; --bg3: #f0ede6;
+      --border: #ddd9d0; --text: #1a1a1a; --muted: #888;
+      --accent: #8b5e2a; --accent2: #1a5fa8; --red: #c0392b; --green: #1a7a3c;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: var(--bg); color: var(--text); font-family: Georgia, serif; line-height: 1.7; }
+    body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', sans-serif; font-size: 14px; line-height: 1.6; }
 
-    /* 헤더 */
-    .site-header {
-      background: var(--bg2); border-bottom: 3px double var(--text);
-      padding: 16px 0; text-align: center;
+    header { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 0 24px; }
+    .header-top {
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px; color: var(--muted); background: var(--bg3);
+      margin: 0 -24px; padding: 8px 24px; gap: 16px;
     }
-    .site-logo { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: var(--text); text-decoration: none; }
-    .site-logo span { color: var(--accent); }
-    .site-nav { margin-top: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); }
-    .site-nav a { color: var(--muted); text-decoration: none; margin: 0 8px; }
-    .site-nav a:hover { color: var(--accent); }
+    .ticker-strip { display: flex; gap: 20px; overflow: hidden; flex: 1; }
+    .ticker-item { display: flex; gap: 6px; align-items: center; white-space: nowrap; }
+    .ticker-label { color: var(--muted); }
+    .ticker-val { color: var(--text); font-weight: 500; }
+    .up { color: var(--green); } .down { color: var(--red); }
+    .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; white-space: nowrap; }
 
-    /* 기사 레이아웃 */
-    .article-wrapper {
-      max-width: 720px; margin: 40px auto; padding: 0 20px;
+    .header-main {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 0; border-bottom: 3px solid var(--text);
+    }
+    .logo { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 900; letter-spacing: -1px; color: var(--text); text-decoration: none; }
+    .logo span { color: var(--accent); }
+    .header-meta { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); text-align: right; }
+
+    nav.page-nav { display: flex; gap: 0; overflow-x: auto; background: var(--bg3); border-bottom: 1px solid var(--border); }
+    nav.page-nav a {
+      padding: 9px 14px; font-size: 12px; font-weight: 500; color: var(--muted);
+      text-decoration: none; border-right: 1px solid var(--border); white-space: nowrap;
+      transition: color 0.2s, background 0.2s;
+    }
+    nav.page-nav a:first-child { border-left: 1px solid var(--border); }
+    nav.page-nav a:hover, nav.page-nav a.active { color: var(--accent2); background: var(--bg2); }
+
+    .article-wrapper { max-width: 760px; margin: 0 auto; padding: 32px 24px 60px; }
+
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+      color: var(--muted); text-decoration: none; margin-bottom: 20px;
+    }
+    .back-btn:hover { color: var(--accent); }
+
+    .article-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+    .tag {
+      display: inline-block; padding: 3px 9px; font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px; border: 1px solid var(--border); color: var(--muted);
+      text-decoration: none; background: var(--bg2);
+    }
+    .tag:hover { border-color: var(--accent); color: var(--accent); }
+
+    .article-title {
+      font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 900;
+      line-height: 1.35; margin-bottom: 16px; color: var(--text); letter-spacing: -0.3px;
     }
 
-    /* 기사 메타 */
     .article-meta {
       font-family: 'IBM Plex Mono', monospace; font-size: 11px;
       color: var(--muted); display: flex; gap: 16px; flex-wrap: wrap;
-      margin-bottom: 16px; padding-bottom: 16px;
-      border-bottom: 1px solid var(--border);
-    }
-    .article-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
-    .tag {
-      display: inline-block; padding: 3px 8px; font-family: 'IBM Plex Mono', monospace;
-      font-size: 10px; border: 1px solid var(--border); color: var(--muted);
-      text-decoration: none;
-    }
-    .tag-own { border-color: var(--accent); color: var(--accent); font-weight: 700; }
-    .tag:hover { border-color: var(--accent); color: var(--accent); }
-
-    /* 기사 제목 */
-    .article-title {
-      font-family: 'Playfair Display', serif; font-size: 32px;
-      font-weight: 700; line-height: 1.3; margin-bottom: 20px; color: var(--text);
+      margin-bottom: 24px; padding-bottom: 20px;
+      border-bottom: 3px solid var(--text);
     }
 
-    /* 기사 본문 */
-    .article-body {
-      font-size: 16px; line-height: 1.9; color: var(--text);
-    }
+    .article-body { font-size: 16px; line-height: 1.95; color: var(--text); }
     .article-body p { margin-bottom: 20px; }
     .article-body ul { margin: 0 0 20px 0; padding-left: 22px; }
     .article-body li { margin-bottom: 10px; }
+    .article-body strong { color: var(--text); }
 
-    /* 자체기사 표시 */
-    .own-badge {
-      display: inline-block; background: var(--accent); color: #fff;
-      font-family: 'IBM Plex Mono', monospace; font-size: 10px;
-      font-weight: 700; padding: 3px 8px; margin-bottom: 12px;
-    }
-
-    /* 원문 링크 */
     .source-link {
-      margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--border);
+      margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--border);
       font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted);
     }
-    .source-link a {
-      color: var(--accent); text-decoration: none;
-    }
-    .source-link a:hover { text-decoration: underline; }
 
-    /* 관련 기사 */
-    .related { margin-top: 48px; padding-top: 24px; border-top: 2px solid var(--text); }
-    .related-title { font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 16px; }
-    .related-item {
-      padding: 12px 0; border-bottom: 1px solid var(--border);
-      display: flex; gap: 12px; align-items: flex-start;
+    .related { margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--border); }
+    .related-title {
+      font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.08em; color: var(--text); margin-bottom: 14px;
+      text-transform: uppercase;
     }
+    .related-item { padding: 12px 0; border-bottom: 1px solid var(--border); }
     .related-item:last-child { border-bottom: none; }
     .related-item-title { font-size: 14px; color: var(--text); text-decoration: none; cursor: pointer; }
     .related-item-title:hover { color: var(--accent); }
     .related-meta { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 4px; }
 
-    /* 뒤로가기 */
-    .back-btn {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-family: 'IBM Plex Mono', monospace; font-size: 11px;
-      color: var(--muted); text-decoration: none; margin-bottom: 24px;
+    footer {
+      border-top: 1px solid var(--border); background: var(--bg2);
+      padding: 24px; text-align: center; font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px; color: var(--muted); margin-top: 0;
     }
-    .back-btn:hover { color: var(--accent); }
-
-    /* 푸터 */
-    .site-footer {
-      margin-top: 60px; padding: 20px; text-align: center;
-      border-top: 1px solid var(--border);
-      font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted);
-    }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
 
     .loading { text-align: center; padding: 60px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; }
-    .error { text-align: center; padding: 60px; color: #c85050; font-family: 'IBM Plex Mono', monospace; }
+    .error { text-align: center; padding: 60px; color: var(--red); font-family: 'IBM Plex Mono', monospace; }
+
+    @media (max-width: 600px) {
+      header { padding: 0 14px; }
+      .header-top { margin: 0 -14px; padding: 8px 14px; }
+      .logo { font-size: 24px; }
+      .article-wrapper { padding: 24px 16px 40px; }
+      .article-title { font-size: 22px; }
+    }
   </style>
 </head>
 <body>
 
-<header class="site-header">
-  <a href="/" class="site-logo">News<span>Final</span></a>
-  <div class="site-nav">
-    <a href="/">홈</a> ·
-    <a href="/?category=경제">경제</a> ·
-    <a href="/?category=금융">금융</a> ·
-    <a href="/?category=자원·에너지">자원·에너지</a> ·
-    <a href="/?category=산업·기업">산업·기업</a> ·
-    <a href="/?category=정치·외교">정치·외교</a> ·
-    <a href="/?category=사회">사회</a> ·
-    <a href="/?category=IT·과학">IT·과학</a> ·
-    <a href="/archive.html">아카이브</a> ·
-    <a href="/calendar.html">경제 일정</a> ·
-    <a href="/markets.html">시장 지표</a> ·
-    <a href="/country.html">국가별</a> ·
-    <a href="/terms.html">이용약관</a>
+<header>
+  <div class="header-top">
+    <div class="ticker-strip" id="ticker"><span style="color:var(--muted)">시세 로딩 중...</span></div>
+    <div class="header-right">
+      <div id="datetime"></div>
+    </div>
   </div>
+  <div class="header-main">
+    <a href="/" class="logo">News<span>Final</span></a>
+    <div class="header-meta">프론티어 미디어</div>
+  </div>
+  <nav class="page-nav">
+    <a href="/">홈</a>
+    <a href="/?category=경제">경제</a>
+    <a href="/?category=금융">금융</a>
+    <a href="/?category=자원·에너지">자원·에너지</a>
+    <a href="/?category=산업·기업">산업·기업</a>
+    <a href="/?category=정치·외교">정치·외교</a>
+    <a href="/?category=사회">사회</a>
+    <a href="/?category=IT·과학">IT·과학</a>
+    <a href="/archive.html">아카이브</a>
+    <a href="/calendar.html">경제 일정</a>
+    <a href="/markets.html">시장 지표</a>
+    <a href="/country.html">국가별</a>
+  </nav>
 </header>
 
 <div class="article-wrapper" id="article-wrapper">
   <div class="loading">기사를 불러오는 중...</div>
 </div>
 
-<footer class="site-footer">
-  NEWSFINAL © 2026
+<footer>
+  <div>NEWSFINAL © 2026</div>
+  <div style="margin-top:6px;">
+    <a href="/about.html">소개</a> ·
+    <a href="/archive.html">아카이브</a> ·
+    <a href="/calendar.html">경제 일정</a> ·
+    <a href="/markets.html">시장 지표</a> ·
+    <a href="/country.html">국가별</a> ·
+    <a href="/privacy.html">개인정보처리방침</a> ·
+    <a href="/terms.html">이용약관</a>
+  </div>
+  <div style="margin-top:6px;"><a href="https://t.me/TheWiseFrontier" style="color:var(--accent2);">텔레그램 채널 →</a></div>
 </footer>
 
 <script>
@@ -184,6 +211,33 @@
     ];
     promoPatterns.forEach(p => { text = text.replace(p, ''); });
     return text.trim();
+  }
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function updateDatetime() {
+    const now = new Date();
+    const el = document.getElementById('datetime');
+    if (el) el.textContent = `${now.getFullYear()}.${pad(now.getMonth()+1)}.${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())} KST`;
+  }
+  updateDatetime();
+  setInterval(updateDatetime, 30000);
+
+  async function loadMarketData() {
+    try {
+      const res = await fetch('data/market_data.json');
+      if (!res.ok) return;
+      const data = await res.json();
+      const indices = data.indices || [];
+      if (!indices.length) return;
+      const ticker = document.getElementById('ticker');
+      if (!ticker) return;
+      ticker.innerHTML = indices.map(m => {
+        const sign = m.change_pct >= 0 ? '+' : '';
+        const cls = m.change_pct >= 0 ? 'up' : 'down';
+        return `<span class="ticker-item"><span class="ticker-label">${m.name}</span><span class="ticker-val ${cls}">${m.price.toLocaleString()} ${sign}${m.change_pct.toFixed(2)}%</span></span>`;
+      }).join('');
+    } catch(e) {}
   }
 
   async function loadArticle() {
@@ -229,12 +283,9 @@
   }
 
   function renderArticle(a, allArticles) {
-    const isOwn = a.source === 'NewsFinal';
-    const isDigest = (a.subcategory || '').startsWith('digest_');
     const title = a.title_ko || a.title_en || '';
     const body = cleanBody(a.summary_ko || a.summary_en || '');
 
-    // "- " 불릿 라인들을 <ul><li>로 묶어서 변환
     const bulletified = body.split('\n').reduce((acc, line) => {
       const trimmed = line.trim();
       if (trimmed.startsWith('- ')) {
@@ -249,13 +300,12 @@
     let processedBody = bulletified.html + (bulletified.inList ? '</ul>' : '');
 
     const bodyHtml = processedBody
-      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')  // **굵게**
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
       .replace(/\n\n/g, '</p><p>')
       .replace(/\n/g, '<br>')
       .replace(/<br>(<ul>)/g, '$1')
       .replace(/(<\/ul>)<br>/g, '$1');
 
-    // 관련 기사 — 국가/카테고리/지역 가중치 점수 기반
     const myCountries = new Set(a.countries && a.countries.length ? a.countries : (a.country ? [a.country] : []));
     const related = allArticles
       .filter(r => r.id !== a.id && r.source === 'NewsFinal')
@@ -272,7 +322,6 @@
       .slice(0, 4)
       .map(x => x.article);
 
-    // 메타 태그 업데이트
     document.title = `${title} — NewsFinal`;
     document.querySelector('meta[name="description"]')?.setAttribute('content', cleanBody(a.summary_ko || '').slice(0, 150));
     document.querySelector('meta[property="og:title"]')?.setAttribute('content', `${title} — NewsFinal`);
@@ -314,10 +363,8 @@
           <div class="related-title">관련 기사</div>
           ${related.map(r => `
             <div class="related-item">
-              <div>
-                <a class="related-item-title" href="/article.html?id=${r.id}">${r.title_ko || r.title_en}</a>
-                <div class="related-meta">NewsFinal · ${(r.created_at || '').slice(0,10)}</div>
-              </div>
+              <a class="related-item-title" href="/article.html?id=${r.id}">${r.title_ko || r.title_en}</a>
+              <div class="related-meta">NewsFinal · ${(r.created_at || '').slice(0,10)}</div>
             </div>
           `).join('')}
         </div>
@@ -325,6 +372,7 @@
     `;
   }
 
+  loadMarketData();
   loadArticle();
 </script>
 </body>
