@@ -688,36 +688,47 @@
     const { data, error } = await sb.from('econ_events')
       .select('*')
       .gte('event_date', new Date(Date.now() - 7*86400000).toISOString().slice(0,10))
+      .order('is_verified', { ascending: true })
       .order('event_date', { ascending: true })
       .order('event_time', { ascending: true });
 
     if (error) { document.getElementById('main-content').innerHTML = `<div class="empty">오류: ${error.message}</div>`; return; }
 
+    const pendingCount = data.filter(ev => ev.is_verified === false).length;
+
     const html = `
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
         <span style="font-size:13px;font-weight:700;">경제 일정 관리</span>
-        <button class="btn btn-primary" style="font-size:11px;" onclick="openEventForm()">+ 일정 추가</button>
+        <div style="display:flex;gap:8px;">
+          ${pendingCount > 0 ? `<span style="font-size:11px;color:var(--accent);align-self:center;">⏳ 검수 대기 ${pendingCount}건</span>` : ''}
+          ${pendingCount > 0 ? `<button class="btn btn-primary" style="font-size:11px;background:var(--success);" onclick="approveAllEvents()">✅ 전체 승인</button>` : ''}
+          <button class="btn btn-primary" style="font-size:11px;" onclick="openEventForm()">+ 일정 추가</button>
+        </div>
       </div>
       <table class="article-table">
         <thead><tr>
           <th style="width:90px;">날짜</th><th style="width:60px;">시간</th>
           <th style="width:100px;">국가</th><th>제목</th>
-          <th style="width:80px;">중요도</th><th style="width:110px;">관리</th>
+          <th style="width:80px;">중요도</th><th style="width:70px;">상태</th><th style="width:150px;">관리</th>
         </tr></thead>
         <tbody>
-          ${data.length === 0 ? '<tr><td colspan="6" class="empty">등록된 일정이 없습니다</td></tr>' : data.map(ev => `
-            <tr>
+          ${data.length === 0 ? '<tr><td colspan="7" class="empty">등록된 일정이 없습니다</td></tr>' : data.map(ev => {
+            const pending = ev.is_verified === false;
+            return `
+            <tr ${pending ? 'style="background:rgba(200,160,96,0.08);"' : ''}>
               <td class="muted">${ev.event_date}</td>
               <td class="muted">${ev.event_time || '-'}</td>
               <td class="muted">${ev.country_flag || ''} ${ev.country || ''}</td>
-              <td>${ev.title}</td>
+              <td>${ev.title}${ev.description ? `<div style="font-size:10px;color:var(--muted);margin-top:2px;">${ev.description}</div>` : ''}</td>
               <td>${IMPORTANCE_LABEL[ev.importance] || ev.importance}</td>
+              <td>${pending ? '<span style="font-size:10px;color:var(--accent);">⏳ 대기</span>' : '<span style="font-size:10px;color:var(--success);">✅ 게시</span>'}</td>
               <td class="actions">
+                ${pending ? `<button class="btn-sm" style="border-color:var(--success);color:var(--success);" onclick="approveEvent(${ev.id})">승인</button>` : ''}
                 <button class="btn-sm" onclick="openEventForm(${ev.id})">편집</button>
                 <button class="btn-sm btn-sm-danger" onclick="deleteEvent(${ev.id})">삭제</button>
               </td>
             </tr>
-          `).join('')}
+          `}).join('')}
         </tbody>
       </table>
     `;
@@ -792,7 +803,9 @@
       title: document.getElementById('ev-title').value,
       description: document.getElementById('ev-desc').value,
       importance: document.getElementById('ev-importance').value,
+      is_verified: true,  // Admin에서 직접 저장하는 것은 검수 완료로 간주
     };
+    if (!id) payload.source = 'manual';
     if (!payload.title || !payload.event_date) { toast('날짜와 제목은 필수입니다', 'error'); return; }
 
     const { error } = id
@@ -810,6 +823,21 @@
     const { error } = await sb.from('econ_events').delete().eq('id', id);
     if (error) { toast(`오류: ${error.message}`, 'error'); return; }
     toast('삭제됐습니다', 'success');
+    showCalendar(document.getElementById('calendar-menu'));
+  }
+
+  async function approveEvent(id) {
+    const { error } = await sb.from('econ_events').update({ is_verified: true }).eq('id', id);
+    if (error) { toast(`오류: ${error.message}`, 'error'); return; }
+    toast('승인됐습니다', 'success');
+    showCalendar(document.getElementById('calendar-menu'));
+  }
+
+  async function approveAllEvents() {
+    if (!confirm('검수 대기 중인 모든 일정을 승인하시겠습니까?')) return;
+    const { error } = await sb.from('econ_events').update({ is_verified: true }).eq('is_verified', false);
+    if (error) { toast(`오류: ${error.message}`, 'error'); return; }
+    toast('전체 승인됐습니다', 'success');
     showCalendar(document.getElementById('calendar-menu'));
   }
 
