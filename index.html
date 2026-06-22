@@ -331,7 +331,7 @@
   <div class="header-top">
     <div class="ticker-strip" id="ticker"><span style="color:var(--muted)">시세 로딩 중...</span></div>
     <div class="header-right">
-      <div><span id="datetime"></span><span id="market-updated" style="margin-left:8px;font-size:9px;opacity:0.6;"></span></div>
+      <div id="datetime"></div>
     </div>
   </div>
 
@@ -1028,11 +1028,6 @@
         const color = m.change_pct >= 0 ? '#50c878' : '#c85050';
         return `<span style="margin-right:24px;">${m.name} <strong>${m.price.toLocaleString()}</strong> <span style="color:${color}">${sign}${m.change_pct.toFixed(2)}%</span></span>`;
       }).join('');
-      const updatedEl = document.getElementById('market-updated');
-      if (updatedEl) {
-        const cleanedTime = (data.updated_at || '').replace(' UTC', '').trim();
-        updatedEl.textContent = `시세 ${cleanedTime} KST`;
-      }
     } catch(e) {}
   }
 
