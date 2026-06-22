@@ -215,6 +215,14 @@
   </div>
 
   <div class="invest-section">
+    <h2 class="page-title" style="font-size:20px;">국가별 거시경제 지표</h2>
+    <div class="invest-disclaimer">
+      출처: IMF World Economic Outlook (WEO) · 매년 4월·10월 자동 갱신 · 투자 권유 아님
+    </div>
+    <div id="econ-table-container"><div class="empty" style="padding:20px;">경제지표를 불러오는 중...</div></div>
+  </div>
+
+  <div class="invest-section">
     <h2 class="page-title" style="font-size:20px;">거래소 대표 기업</h2>
     <div class="invest-disclaimer">
       <strong>안내</strong> — 아래 기업들은 한국 증권사를 통해 직접 매수할 수 없습니다. 각국 증시 구조를 이해하기 위한 참고 정보입니다.
@@ -430,8 +438,63 @@
     }
   }
 
+  async function loadEconTable() {
+    const container = document.getElementById('econ-table-container');
+    try {
+      const res = await fetch('data/econ_indicators.json');
+      if (!res.ok) { container.innerHTML = '<div class="empty" style="padding:20px;">경제지표 데이터 없음</div>'; return; }
+      const data = await res.json();
+      const countries = data.countries || {};
+
+      const COUNTRY_ORDER = ['NGA','KEN','ZAF','VNM','IDN','THA','PHL','EGY'];
+      const LABELS = {
+        gdp_growth: 'GDP 성장률',
+        inflation: '인플레이션',
+        unemployment: '실업률',
+        current_account: '경상수지/GDP',
+      };
+
+      let html = `<table class="product-table">
+        <thead><tr>
+          <th>국가</th>
+          <th>GDP 성장률</th>
+          <th>인플레이션</th>
+          <th>실업률</th>
+          <th>경상수지/GDP</th>
+        </tr></thead><tbody>`;
+
+      for (const code of COUNTRY_ORDER) {
+        const d = countries[code];
+        if (!d) continue;
+        const fmt = (val, key) => {
+          if (val === null || val === undefined) return '<span style="color:var(--muted)">N/A</span>';
+          const n = parseFloat(val);
+          const sign = n > 0 ? '+' : '';
+          const cls = key === 'gdp_growth' || key === 'current_account'
+            ? (n >= 0 ? 'up' : 'down')
+            : (n > 10 ? 'down' : '');
+          return `<span class="${cls}" style="font-family:'IBM Plex Mono',monospace;font-weight:700;">${sign}${n.toFixed(1)}%</span>`;
+        };
+        html += `<tr>
+          <td class="product-name">${d.country_name} <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);">(${d.gdp_growth_year || ''})</span></td>
+          <td>${fmt(d.gdp_growth, 'gdp_growth')}</td>
+          <td>${fmt(d.inflation, 'inflation')}</td>
+          <td>${fmt(d.unemployment, 'unemployment')}</td>
+          <td>${fmt(d.current_account, 'current_account')}</td>
+        </tr>`;
+      }
+      html += `</tbody></table>
+        <div class="source-note" style="margin-top:8px;">기준 연도는 국가별로 다를 수 있음 · 갱신: ${data.updated_at || ''}</div>`;
+
+      container.innerHTML = html;
+    } catch(e) {
+      container.innerHTML = '<div class="empty" style="padding:20px;">경제지표를 불러올 수 없습니다</div>';
+    }
+  }
+
   loadTicker();
   load();
+  loadEconTable();
 </script>
 
 </body>
