@@ -334,6 +334,7 @@
       <div id="datetime"></div>
     </div>
   </div>
+  <!-- v2 -->
 
   <div class="header-main">
     <a href="/" class="logo">News<span>Final</span></a>
@@ -1025,8 +1026,8 @@
       if (!ticker) return;
       ticker.innerHTML = indices.map(m => {
         const sign = m.change_pct >= 0 ? '+' : '';
-        const color = m.change_pct >= 0 ? '#50c878' : '#c85050';
-        return `<span style="margin-right:24px;">${m.name} <strong>${m.price.toLocaleString()}</strong> <span style="color:${color}">${sign}${m.change_pct.toFixed(2)}%</span></span>`;
+        const cls = m.change_pct >= 0 ? 'up' : 'down';
+        return `<span class="ticker-item"><span class="ticker-label">${m.name}</span><span class="ticker-val ${cls}">${m.price.toLocaleString()} ${sign}${m.change_pct.toFixed(2)}%</span></span>`;
       }).join('');
     } catch(e) {}
   }
