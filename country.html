@@ -182,6 +182,15 @@
     <div class="index-grid" id="market-container"></div>
   </div>
 
+  <div class="section" id="econ-section" style="display:none;">
+    <div class="section-header">
+      <span>거시경제 지표</span>
+      <span style="font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;font-weight:400;" id="econ-source"></span>
+    </div>
+    <div class="index-grid" id="econ-container"></div>
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);margin-top:8px;">출처: IMF World Economic Outlook · 투자 권유 아님</div>
+  </div>
+
   <div class="section" id="company-section" style="display:none;">
     <div class="section-header">
       <span>거래소 대표 기업</span>
@@ -292,6 +301,14 @@
 
   let allArticles = [];
   let allMarketData = null;
+  let allEconData = null;
+
+  // 국가명(한국어) → IMF ISO-3 코드 매핑
+  const COUNTRY_ISO_MAP = {
+    '나이지리아': 'NGA', '케냐': 'KEN', '남아공': 'ZAF',
+    '베트남': 'VNM', '인도네시아': 'IDN', '태국': 'THA',
+    '필리핀': 'PHL', '이집트': 'EGY',
+  };
   let countryList = [];
 
   function pad(n) { return String(n).padStart(2, '0'); }
@@ -376,6 +393,64 @@
       if (!res.ok) return;
       allMarketData = await res.json();
     } catch(e) {}
+  }
+
+  async function loadEconData() {
+    try {
+      const res = await fetch('data/econ_indicators.json');
+      if (!res.ok) return;
+      allEconData = await res.json();
+    } catch(e) {}
+  }
+
+  function renderEcon(country) {
+    const section = document.getElementById('econ-section');
+    const container = document.getElementById('econ-container');
+    const sourceEl = document.getElementById('econ-source');
+    if (!allEconData) { section.style.display = 'none'; return; }
+
+    const isoCode = COUNTRY_ISO_MAP[country];
+    if (!isoCode) { section.style.display = 'none'; return; }
+
+    const data = allEconData.countries && allEconData.countries[isoCode];
+    if (!data) { section.style.display = 'none'; return; }
+
+    const LABELS = {
+      gdp_growth: 'GDP 성장률',
+      inflation: '인플레이션',
+      unemployment: '실업률',
+      current_account: '경상수지/GDP',
+    };
+    const UNITS = {
+      gdp_growth: '%',
+      inflation: '%',
+      unemployment: '%',
+      current_account: '%',
+    };
+
+    let html = '';
+    for (const [key, label] of Object.entries(LABELS)) {
+      const val = data[key];
+      const year = data[`${key}_year`];
+      if (val === null || val === undefined) continue;
+      const num = parseFloat(val);
+      const cls = key === 'inflation' || key === 'unemployment'
+        ? (num > 10 ? 'down' : '')
+        : (num >= 0 ? 'up' : 'down');
+      const sign = num > 0 ? '+' : '';
+      html += `
+        <div class="index-card">
+          <div class="index-name">${label}</div>
+          <div class="index-price ${cls}">${sign}${num.toFixed(1)}${UNITS[key]}</div>
+          <div class="index-change" style="color:var(--muted)">${year || ''}년 기준</div>
+        </div>`;
+    }
+
+    if (!html) { section.style.display = 'none'; return; }
+
+    container.innerHTML = html;
+    if (sourceEl) sourceEl.textContent = `IMF WEO · ${allEconData.updated_at || ''} 기준`;
+    section.style.display = 'block';
   }
 
   function renderMarket(country) {
@@ -486,13 +561,14 @@
     history.replaceState(null, '', url);
 
     renderMarket(country);
+    renderEcon(country);
     renderCompanies(country);
     renderCalendar(country);
     renderArticles(country);
   }
 
   loadTicker();
-  Promise.all([loadCountryList(), loadMarketData()]);
+  Promise.all([loadCountryList(), loadMarketData(), loadEconData()]);
 </script>
 
 </body>
